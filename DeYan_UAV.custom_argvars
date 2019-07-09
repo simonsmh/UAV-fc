@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iarUserArgVars>
+    <group name="P" active="true">
+        <variable>
+            <name>PROJ_DIR</name>
+            <value>D:\Projects\DeYan_UAV</value>
+        </variable>
+    </group>
+</iarUserArgVars>
