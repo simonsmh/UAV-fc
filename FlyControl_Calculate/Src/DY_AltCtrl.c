@@ -16,7 +16,7 @@ static s16 auto_taking_off_speed;
 /***************高度控制变量初始化***************/
 s16 dy_height = 0;
 
-#define AUTO_TAKE_OFF_KP 2.0f
+// #define AUTO_TAKE_OFF_KP 2.0f
 ////extern _filter_1_st wz_spe_f1;
 void Auto_Take_Off_Land_Task(u8 dT_ms)//
 {

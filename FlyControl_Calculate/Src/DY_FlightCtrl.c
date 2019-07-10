@@ -106,7 +106,6 @@ void one_key_take_off()
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF;
 			//½âËø¡¢Æð·É
-
 			flag.taking_off = 1;
 		}
 	}
@@ -600,26 +599,26 @@ void Flight_Mode_Set(u8 dT_ms)
 			DY_Task_ExeTime += dT_ms;
 			if ((DY_Task_ExeTime >= 3000) && (DY_Land_Flag == 0))
 			{
-				dy_pit = 15;
+				dy_pit = 20;
 				dy_rol = 0;
 				DY_Land_Flag = 1;
 			}
 			if ((DY_Task_ExeTime >= 4500) && (DY_Land_Flag == 1))
 			{
 				dy_pit = 0;
-				dy_rol = 15;
+				dy_rol = 20;
 				DY_Land_Flag = 2;
 			}
 			if ((DY_Task_ExeTime >= 6000) && (DY_Land_Flag == 2))
 			{
-				dy_pit = -15;
+				dy_pit = -20;
 				dy_rol = 0;
 				DY_Land_Flag = 3;
 			}
 			if ((DY_Task_ExeTime >= 7500) && (DY_Land_Flag == 3))
 			{
 				dy_pit = 0;
-				dy_rol = -15;
+				dy_rol = -20;
 				DY_Land_Flag = 4;
 			}
 			if ((DY_Task_ExeTime >= 9000) && (DY_Land_Flag == 4))

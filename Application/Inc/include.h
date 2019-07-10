@@ -18,8 +18,6 @@
 #define BL_VER	    0
 #define PT_VER	    400
 
-#define DY_DT_USE_USART3 				//开启UART3数传功能
-
 //================传感器===================
 //以下为板载各个传感器的使能引脚配置
 #define ICM20602_CS_SYSCTL		SYSCTL_PERIPH_GPION

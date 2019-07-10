@@ -38,8 +38,13 @@ u8 All_Init()
 
     Flash_Init();             		    //板载FLASH芯片(W25Q32)初始化，SPI1通信10MHz
 
-    Uart3_Init(500000);                 //数传模块
+    Uart3_Init(500000);                //闲置
     Delay_ms(10);
+    MAP_UARTCharPut(UART3_BASE, 0x00); //UART3中断发送数据初始化（无效数据）
+    Uart4_Init(500000);                //数传模块
+    Delay_ms(10);
+    MAP_UARTCharPut(UART4_BASE, 0x00); //UART4中断发送数据初始化（无效数据）
+
     Para_Data_Init();		            //参数数据初始化，读Flash
 
     PWM_IN_Init();			            //输入捕获
@@ -57,15 +62,9 @@ u8 All_Init()
     sens_hd_check.mag_ok = 1;           //标记磁力计OK
     sens_hd_check.baro_ok = Drv_Spl0601_Init();       		//SPL0601初始化，若初始化成功，则将气压计的初始化成功标志位赋值
 
-
-    MAP_UARTCharPut(UART3_BASE, 0x00);  //UART3中断发送数据初始化（无效数据）
-    Uart4_Init(500000);                 //匿名光流模块
+    Uart5_Init(500000);                //OpenMv
     Delay_ms(10);
-    MAP_UARTCharPut(UART4_BASE, 0x00);  //UART4中断发送数据初始化（无效数据）
-    Uart5_Init(500000);                 //OpenMv
-    Delay_ms(10);
-    MAP_UARTCharPut(UART5_BASE, 0x00);  //UART5中断发送数据初始化（无效数据）
-
+    MAP_UARTCharPut(UART5_BASE, 0x00); //UART5中断发送数据初始化（无效数据）
     I2C_Soft_Init();          		    //I2C初始化，飞控外接VL53L0X激光测距模块，使用I2C通信
     Drv_Vl53_Init();          		    //TOF传感器初始化，使用VL53L0X激光测距模块
 

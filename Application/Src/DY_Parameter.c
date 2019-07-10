@@ -57,7 +57,7 @@ void PID_Rest()
 	DY_Parame.set.pid_loc_2level[KI] = 0.f;           //位置控制位置环PID参数
 	DY_Parame.set.pid_loc_2level[KD] = 0.f;           //位置控制位置环PID参数
 
-	// DY_DT_SendString("PID reset!",sizeof("PID reset!"));
+	DY_DT_SendString("PID reset!",sizeof("PID reset!"));
 }
 
 static void Parame_Copy_Para2fc()
@@ -108,7 +108,7 @@ void Parame_Reset(void)
 
 	Parame_Copy_Para2fc();
 
-        DY_DT_SendString("parameter reset!",sizeof("parameter reset!"));
+    DY_DT_SendString("parameter reset!",sizeof("parameter reset!"));
 }
 
 static void DY_Parame_Write(void)
@@ -125,7 +125,6 @@ static void DY_Parame_Write(void)
 void DY_Parame_Read(void)
 {
 	Flash_SectorsRead ( 0x000000, &DY_Parame.byte[0], 1 );		//读取第一扇区内的参数
-	Flash_SectorsRead2( 0x000000, &DY_Parame.byte[0], 1 );
 
 	if(DY_Parame.set.frist_init != SOFT_VER)	                //内容没有被初始化，则进行参数初始化工作
 	{
@@ -141,9 +140,8 @@ void DY_Parame_Write_task(u16 dT_ms)
 {
 	//因为写入flash耗时较长，飞控做了一个特殊逻辑，在解锁后，是不进行参数写入的，此时会置一个需要写入标志位，等飞机降落锁定后，再写入参数，提升飞行安全性
 	//为了避免连续更新两个参数，造成flash写入两次，我们飞控加入一个延时逻辑，参数改变后3秒，才进行写入操作，可以一次写入多项参数，降低flash擦写次数
-	if(para_sta.save_en )
+	if(para_sta.save_en)
 	{
-        DY_DT_SendStr("Save Start!",sizeof("Save Start!"));
 		if(para_sta.save_trig == 1) 	//如果触发存储标记1
 		{
 			LED_state = 17;
@@ -172,7 +170,6 @@ void DY_Parame_Write_task(u16 dT_ms)
 	}
 	else
 	{
-        DY_DT_SendStr("Save Stop!",sizeof("Save Stop!"));
 		para_sta.time_delay = 0;
 		para_sta.save_trig = 0;
 	}
