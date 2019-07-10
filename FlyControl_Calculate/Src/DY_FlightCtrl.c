@@ -75,38 +75,40 @@ void one_key_roll()
 			}
 }
 
-static u16 one_key_taof_start;
-/*一键起飞任务（主要功能为延迟）*/
-void one_key_take_off_task(u16 dt_ms)
-{
-	if(one_key_taof_start != 0)
-	{
-		one_key_taof_start += dt_ms;
-
-
-		if(one_key_taof_start > 1400 && flag.motor_preparation == 1)		//1400*10=14000ms=14s
-		{
-			one_key_taof_start = 0;
-				if(flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
-				{
-					flag.auto_take_off_land = AUTO_TAKE_OFF;
-					//解锁、起飞
-
-					flag.taking_off = 1;
-				}
-
-		}
-	}
-
-}
+// static u16 one_key_taof_start;
+// /*一键起飞任务（主要功能为延迟）*/
+// void one_key_take_off_task(u16 dt_ms)
+// {
+// 	if(one_key_taof_start != 0)
+// 	{
+// 		one_key_taof_start += dt_ms;
+// 		if(one_key_taof_start > 1400 && flag.motor_preparation == 1)		//1400*10=14000ms=14s
+// 		{
+// 			one_key_taof_start = 0;
+// 				if(flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
+// 				{
+// 					flag.auto_take_off_land = AUTO_TAKE_OFF;
+// 					//解锁、起飞
+// 					flag.taking_off = 1;
+// 				}
+// 		}
+// 	}
+// }
 
 /*一键起飞*/
 void one_key_take_off()
 {
 	if(flag.unlock_en)
 	{
-		one_key_taof_start = 1;
+		// one_key_taof_start = 1;
 		flag.fly_ready = 1;
+		if (flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
+		{
+			flag.auto_take_off_land = AUTO_TAKE_OFF;
+			//解锁、起飞
+
+			flag.taking_off = 1;
+		}
 	}
 }
 
@@ -578,21 +580,43 @@ void Flight_Mode_Set(u8 dT_ms)
 //             MAP_UARTCharPut(UART5_BASE, 'H');     //OpenMv开始工作
 //           }
 //         }
-
 // 	}
 
-	// if(CH_N[AUX2]<-200)
-	// {
-
-	// }
-	// else if(CH_N[AUX2]<200)
-	// {
-
-	// }
-	// else
-	// {
-
-	// }
+	if(CH_N[AUX2] > 200)
+	{
+		flag.flight_mode = LOC_HOLD;
+		if (DY_Debug_Height_Mode == 0)
+		{
+			DY_Debug_Height_Mode = 1;
+			one_key_take_off();
+		}
+		if (tof_height_mm >= 800 && DY_CountTime_Flag == 0)
+		{
+			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+			DY_CountTime_Flag = 1;
+		}
+		if (DY_CountTime_Flag)
+		{
+			DY_Task_ExeTime += dT_ms;
+			if (DY_Task_ExeTime >= 5000 && DY_Land_Flag == 0)
+			{
+				DY_Land_Flag = 1;
+				one_key_land(); //一键降落
+			}
+		}
+	}
+	else
+	{
+		// flag.flight_mode = LOC_HOLD;
+		if (DY_Debug_Height_Mode == 1)
+		{
+			//初始化
+			DY_Debug_Height_Mode = 0;
+			DY_CountTime_Flag = 0;
+			DY_Land_Flag = 0;
+			DY_Task_ExeTime = 0;
+		}
+	}
 
 }
 

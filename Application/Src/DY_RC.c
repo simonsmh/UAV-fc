@@ -147,7 +147,7 @@ void unlock(u8 dT_ms)
 		stick_function_check_longpress(dT_ms,&unlock_f,unlock_time,stick_fun_0,f,&flag.fly_ready);
 
 		//强制锁定
-		if (CH_N[AUX2] > 0)
+		if (CH_N[AUX2] < -200)
 			flag.fly_ready = 0;
 	}
 	else
