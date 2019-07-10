@@ -38,7 +38,7 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 
 	if(flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
-		auto_taking_off_speed = 40;
+		auto_taking_off_speed = 60;
 	}
 	else if(flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
 	{

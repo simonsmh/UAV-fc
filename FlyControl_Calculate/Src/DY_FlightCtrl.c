@@ -584,13 +584,13 @@ void Flight_Mode_Set(u8 dT_ms)
 
 	if(CH_N[AUX2] > 200)
 	{
-		flag.flight_mode = LOC_HOLD;
-		if (DY_Debug_Height_Mode == 0)
+		if ((DY_Debug_Height_Mode == 0) && (DY_Debug_Mode == 0))
 		{
 			DY_Debug_Height_Mode = 1;
+			DY_Debug_Mode = 1;
 			one_key_take_off();
 		}
-		if (tof_height_mm >= 800 && DY_CountTime_Flag == 0)
+		if ((tof_height_mm >= 1000) && (DY_CountTime_Flag == 0))
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 			DY_CountTime_Flag = 1;
@@ -598,20 +598,56 @@ void Flight_Mode_Set(u8 dT_ms)
 		if (DY_CountTime_Flag)
 		{
 			DY_Task_ExeTime += dT_ms;
-			if (DY_Task_ExeTime >= 5000 && DY_Land_Flag == 0)
+			if ((DY_Task_ExeTime >= 3000) && (DY_Land_Flag == 0))
 			{
+				dy_pit = 15;
+				dy_rol = 0;
 				DY_Land_Flag = 1;
+			}
+			if ((DY_Task_ExeTime >= 4500) && (DY_Land_Flag == 1))
+			{
+				dy_pit = 0;
+				dy_rol = 15;
+				DY_Land_Flag = 2;
+			}
+			if ((DY_Task_ExeTime >= 6000) && (DY_Land_Flag == 2))
+			{
+				dy_pit = -15;
+				dy_rol = 0;
+				DY_Land_Flag = 3;
+			}
+			if ((DY_Task_ExeTime >= 7500) && (DY_Land_Flag == 3))
+			{
+				dy_pit = 0;
+				dy_rol = -15;
+				DY_Land_Flag = 4;
+			}
+			if ((DY_Task_ExeTime >= 9000) && (DY_Land_Flag == 4))
+			{
+				dy_pit = 0;
+				dy_rol = 0;
+				DY_Land_Flag = 5;
+			}
+			if ((DY_Task_ExeTime >= 10500) && (DY_Land_Flag == 5))
+			{
+				DY_Land_Flag = 6;
 				one_key_land(); //Ò»¼ü½µÂä
 			}
 		}
 	}
 	else
 	{
-		// flag.flight_mode = LOC_HOLD;
-		if (DY_Debug_Height_Mode == 1)
+		flag.flight_mode = LOC_HOLD;
+		if ((DY_Debug_Mode == 1) || (DY_Debug_Height_Mode == 1))
 		{
 			//³õÊ¼»¯
+			DY_Debug_Mode = 0;
 			DY_Debug_Height_Mode = 0;
+			DY_Debug_Yaw_Mode = 0;
+			dy_pit = 0;
+			dy_rol = 0;
+			dy_height = 0;
+			dy_yaw = 0;
 			DY_CountTime_Flag = 0;
 			DY_Land_Flag = 0;
 			DY_Task_ExeTime = 0;

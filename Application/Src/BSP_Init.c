@@ -29,34 +29,34 @@ u8 All_Init()
 {
     g_ui32SysClock = MAP_SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN |
                                           SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480),
-                                          120000000);       
+                                          120000000);
                                         //初始化系统时钟120MHz
 
     SysTick_Configuration(); 		    //滴答时钟，提供系统运行时间及延时函数
-    
+
     Drv_LED_Init();					    //LED+RGB初始化
-    
+
     Flash_Init();             		    //板载FLASH芯片(W25Q32)初始化，SPI1通信10MHz
-    
+
     Uart3_Init(500000);                 //数传模块
     Delay_ms(10);
     Para_Data_Init();		            //参数数据初始化，读Flash
-	
+
     PWM_IN_Init();			            //输入捕获
 
     PWM_Out_Init();                     //电机PWM输出400Hz
     Delay_ms(100);
-    
+
     Drv_SPI2_init();          		    //SPI0初始化，用于读取飞控板上所有传感器，SPI通信10MHz
     Drv_Icm20602CSPin_Init(); 		    //ICM_CS初始化
     Drv_AK8975CSPin_Init();   		    //AK_CS初始化
     Drv_SPL06CSPin_Init();    		    //SPL_CS初始化
-    
-    sens_hd_check.gyro_ok = sens_hd_check.acc_ok = 
+
+    sens_hd_check.gyro_ok = sens_hd_check.acc_ok =
     Drv_Icm20602Reg_Init();   		    //ICM20602初始化，若初始化成功，则将陀螺仪和加速度的初始化成功标志位赋值
-    sens_hd_check.mag_ok = 1;           //标记磁力计OK	
+    sens_hd_check.mag_ok = 1;           //标记磁力计OK
     sens_hd_check.baro_ok = Drv_Spl0601_Init();       		//SPL0601初始化，若初始化成功，则将气压计的初始化成功标志位赋值
-    
+
 
     MAP_UARTCharPut(UART3_BASE, 0x00);  //UART3中断发送数据初始化（无效数据）
     Uart4_Init(500000);                 //匿名光流模块
@@ -65,17 +65,17 @@ u8 All_Init()
     Uart5_Init(500000);                 //OpenMv
     Delay_ms(10);
     MAP_UARTCharPut(UART5_BASE, 0x00);  //UART5中断发送数据初始化（无效数据）
-    
+
     I2C_Soft_Init();          		    //I2C初始化，飞控外接VL53L0X激光测距模块，使用I2C通信
     Drv_Vl53_Init();          		    //TOF传感器初始化，使用VL53L0X激光测距模块
-    
+
     sens_hd_check.dy_pmw3901_ok =  OpticalFlow_Init();      //ATK-PMW3901光流模块初始化，若初始化成功，则将ATK-PMW3901光流模块的初始化成功标志位赋值
 
     ADC0_Init();		                //A/D采集电池电压
     Delay_ms(100);
 
     All_PID_Init();               	    //PID参数初始化
-    
+
     MAP_IntPriorityGroupingSet(3);              //中断优先级分组
     MAP_IntPrioritySet(INT_TIMER0A, 0x20);      //使用1个字节的高3位表示，001 00000
     MAP_IntPrioritySet(INT_TIMER1A, 0x20);
@@ -87,10 +87,10 @@ u8 All_Init()
     MAP_IntPrioritySet(INT_UART4,   0x40);      //010 00000
     MAP_IntPrioritySet(INT_UART5,   0x80);      //100 00000
     MAP_IntPrioritySet(INT_ADC0SS3, 0xC0);      //110 00000
-    
+
     DY_DT_SendString("SYS init OK!",sizeof("SYS init OK!"));		//系统初始化完毕
     Delay_ms(100);
-    
+
 	return (1);
 }
 
