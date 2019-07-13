@@ -38,7 +38,7 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 
 	if(flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
-		auto_taking_off_speed = 60;
+		auto_taking_off_speed = 40;
 	}
 	else if(flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
 	{
@@ -46,6 +46,10 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 	}
 	else if(flag.auto_take_off_land == AUTO_LAND)
 	{
+		dy_height = 0;
+		dy_pit = 0;
+		dy_rol = 0;
+		dy_yaw = 0.0f;
 		auto_taking_off_speed = -50;
 	}
 

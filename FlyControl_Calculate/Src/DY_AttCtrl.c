@@ -9,7 +9,7 @@
 #include "DY_MotorCtrl.h"
 
 //角度环控制参数
-_PID_arg_st arg_2[VEC_RPY] ; 
+_PID_arg_st arg_2[VEC_RPY] ;
 
 //角速度环控制参数
 _PID_arg_st arg_1[VEC_RPY] ;
@@ -29,7 +29,7 @@ void Att_2level_PID_Init()
 	arg_2[ROL].kd_ex = DY_Parame.set.pid_att_2level[ROL][KD];
 	arg_2[ROL].kd_fb = DY_Parame.set.pid_att_2level[ROL][KD];
 	arg_2[ROL].k_ff = 0.0f;
-	
+
 	arg_2[PIT].kp = DY_Parame.set.pid_att_2level[PIT][KP];
 	arg_2[PIT].ki = DY_Parame.set.pid_att_2level[PIT][KI];
 	arg_2[PIT].kd_ex = DY_Parame.set.pid_att_2level[PIT][KD];
@@ -40,7 +40,7 @@ void Att_2level_PID_Init()
 	arg_2[YAW].ki = DY_Parame.set.pid_att_2level[YAW][KI];
 	arg_2[YAW].kd_ex = DY_Parame.set.pid_att_2level[YAW][KD];
 	arg_2[YAW].kd_fb = DY_Parame.set.pid_att_2level[YAW][KD];
-	arg_2[YAW].k_ff = 0.0f;		
+	arg_2[YAW].k_ff = 0.0f;
 }
 
 /*
@@ -62,7 +62,7 @@ void Att_1level_PID_Init()
 	arg_1[ROL].kd_ex = 0.005f   ;
 	arg_1[ROL].kd_fb = DY_Parame.set.pid_att_1level[ROL][KD];
 	arg_1[ROL].k_ff = 0.0f;
-	
+
 	arg_1[PIT].kp = DY_Parame.set.pid_att_1level[PIT][KP];
 	arg_1[PIT].ki = DY_Parame.set.pid_att_1level[PIT][KI];
 	arg_1[PIT].kd_ex = 0.005f   ;
@@ -73,8 +73,8 @@ void Att_1level_PID_Init()
 	arg_1[YAW].ki = DY_Parame.set.pid_att_1level[YAW][KI];
 	arg_1[YAW].kd_ex = 0.00f   ;
 	arg_1[YAW].kd_fb = DY_Parame.set.pid_att_1level[YAW][KD];
-	arg_1[YAW].k_ff = 0.00f;	
-	
+	arg_1[YAW].k_ff = 0.00f;
+
 #if (MOTOR_ESC_TYPE == 2)		//无刷电机带刹车
 	#define DIFF_GAIN 0.3f
 //	arg_1[ROL].kd_ex = arg_1[ROL].kd_ex *DIFF_GAIN;
@@ -101,7 +101,7 @@ void Set_Att_1level_Ki(u8 mode)
 		arg_1[ROL].ki = DY_Parame.set.pid_att_1level[ROL][KI];
 		arg_1[PIT].ki = DY_Parame.set.pid_att_1level[PIT][KI];
 	}
-	else 
+	else
 	{
 		arg_1[ROL].ki = arg_1[PIT].ki = CTRL_1_KI_START;
 	}
@@ -137,27 +137,27 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	/*积分微调*/
 	exp_rol_tmp = - loc_ctrl_1.out[Y];
 	exp_pit_tmp = - loc_ctrl_1.out[X];
-	
+
 	if(ABS(exp_rol_tmp + att_2l_ct.exp_rol_adj) < 5)
 	{
 		att_2l_ct.exp_rol_adj += 0.1f *exp_rol_tmp *dT_s;
 		att_2l_ct.exp_rol_adj = LIMIT(att_2l_ct.exp_rol_adj,-1,1);
 	}
-	
+
 	if(ABS(exp_pit_tmp + att_2l_ct.exp_pit_adj) < 5)
 	{
 		att_2l_ct.exp_pit_adj += 0.1f *exp_pit_tmp *dT_s;
 		att_2l_ct.exp_pit_adj = LIMIT(att_2l_ct.exp_pit_adj,-1,1);
 	}
-	
+
 	/*正负参考DY坐标参考方向*/
 	att_2l_ct.exp_rol = exp_rol_tmp + att_2l_ct.exp_rol_adj + POS_V_DAMPING *imu_data.h_acc[Y];		//exp_rol_tmp起主要作用
 	att_2l_ct.exp_pit = exp_pit_tmp + att_2l_ct.exp_pit_adj + POS_V_DAMPING *imu_data.h_acc[X];
-	
+
 	/*期望角度限幅*/
 	att_2l_ct.exp_rol = LIMIT(att_2l_ct.exp_rol,-MAX_ANGLE,MAX_ANGLE);
 	att_2l_ct.exp_pit = LIMIT(att_2l_ct.exp_pit,-MAX_ANGLE,MAX_ANGLE);
-	
+
 
 	//////////////////////////////////////////////////////////////
 	if(flag.speed_mode == 3)
@@ -168,7 +168,7 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	{
 		max_yaw_speed = 280;
 	}
-	else 
+	else
 	{
 		max_yaw_speed = 200;
 	}
@@ -176,14 +176,14 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	att_1l_ct.set_yaw_speed = (s32)(0.0023f *my_deadzone(CH_N[CH_YAW],0,65) *max_yaw_speed);
 	/*最大YAW角速度限幅*/
 	set_yaw_av_tmp = LIMIT(att_1l_ct.set_yaw_speed ,-max_yaw_speed,max_yaw_speed);
-	
+
 	/*没有起飞，复位*/
 	if(flag.taking_off==0)//if(flag.locking)
 	{
 		att_2l_ct.exp_rol = att_2l_ct.exp_pit = set_yaw_av_tmp = 0;
 		att_2l_ct.exp_yaw = att_2l_ct.fb_yaw;
 	}
-	
+
     /***************OpenMv控制***************/
 	if(DY_Debug_Yaw_Mode == 1)
 	{
@@ -193,17 +193,17 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	{
 		att_2l_ct.exp_yaw += set_yaw_av_tmp *dT_s;
 	}
-	
+
 	/*限制为+-180度*/
 	if(att_2l_ct.exp_yaw<-180) att_2l_ct.exp_yaw += 360;
-	else if(att_2l_ct.exp_yaw>180) att_2l_ct.exp_yaw -= 360;	
-	
+	else if(att_2l_ct.exp_yaw>180) att_2l_ct.exp_yaw -= 360;
+
 	/*计算YAW角度误差*/
 	att_2l_ct.yaw_err = (att_2l_ct.exp_yaw - att_2l_ct.fb_yaw);
 	/*限制为+-180度*/
 	if(att_2l_ct.yaw_err<-180) att_2l_ct.yaw_err += 360;
 	else if(att_2l_ct.yaw_err>180) att_2l_ct.yaw_err -= 360;
-	
+
 	/*限制误差增大*/
 	if(att_2l_ct.yaw_err>90)
 	{
@@ -221,12 +221,11 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	}
 
 	/*赋值反馈角度值*/
-	att_2l_ct.fb_yaw = imu_data.yaw ;
-		
-	att_2l_ct.fb_rol = (imu_data.rol ) ;
-	att_2l_ct.fb_pit = (imu_data.pit ) ;
-			
-	
+	att_2l_ct.fb_yaw = imu_data.yaw;
+	att_2l_ct.fb_rol = imu_data.rol;
+	att_2l_ct.fb_pit = imu_data.pit;
+
+
 	PID_calculate( dT_s,            //周期（单位：秒）
 										0 ,				//前馈值
 										att_2l_ct.exp_rol ,				//期望值（设定值）
@@ -236,7 +235,7 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	                  5,//积分误差限幅
 										5 *flag.taking_off			//integration limit，积分限幅
 										 )	;
-										
+
 	PID_calculate( dT_s,            //周期（单位：秒）
 										0 ,				//前馈值
 										att_2l_ct.exp_pit ,				//期望值（设定值）
@@ -246,7 +245,7 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	                  5,//积分误差限幅
 										5 *flag.taking_off		//integration limit，积分限幅
 										 )	;
-	
+
 	PID_calculate( dT_s,            //周期（单位：秒）
 										0 ,				//前馈值
 										att_2l_ct.yaw_err ,				//期望值（设定值）
@@ -266,7 +265,7 @@ void Att_1level_Ctrl(float dT_s)
 {
 	////////////////改变控制参数任务（最小控制周期内）////////////////////////
 	ctrl_parameter_change_task();
-	
+
 
     /*目标角速度赋值*/
      for(u8 i = 0;i<3;i++)
@@ -283,9 +282,9 @@ void Att_1level_Ctrl(float dT_s)
 	att_1l_ct.fb_angular_velocity[ROL] =  sensor.Gyro_deg[X];
 	att_1l_ct.fb_angular_velocity[PIT] = -sensor.Gyro_deg[Y];
 	att_1l_ct.fb_angular_velocity[YAW] = -sensor.Gyro_deg[Z];
-	
 
-	/*PID计算*/									 
+
+	/*PID计算*/
      for(u8 i = 0;i<3;i++)
      {
             PID_calculate( dT_s,            //周期（单位：秒）
@@ -297,11 +296,11 @@ void Att_1level_Ctrl(float dT_s)
                         200,//积分误差限幅
                                             CTRL_1_INTE_LIM *flag.taking_off			//integration limit，积分幅度限幅
                                              )	; 		//输出==>val_1[i].out
-     
-        
+
+
          ct_val[i] = (val_1[i].out);
      }
-										 
+
 	/*赋值，最终比例调节*/
 	mc.ct_val_rol =                   FINAL_P *ct_val[ROL];
 	mc.ct_val_pit = X_PROPORTION_X_Y *FINAL_P *ct_val[PIT];
@@ -310,7 +309,7 @@ void Att_1level_Ctrl(float dT_s)
 	mc.ct_val_rol = LIMIT(mc.ct_val_rol,-1000,1000);
 	mc.ct_val_pit = LIMIT(mc.ct_val_pit,-1000,1000);
 	mc.ct_val_yaw = LIMIT(mc.ct_val_yaw,-400,400);
-	
+
 }
 
 _rolling_flag_st rolling_flag;

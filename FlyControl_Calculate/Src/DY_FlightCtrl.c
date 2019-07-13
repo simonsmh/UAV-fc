@@ -131,7 +131,7 @@ static s16 ld_delay_cnt ;
 void land_discriminat(s16 dT_ms)
 {
 	/*油门归一值小于0.1并且垂直方向加速度小于阈值  或者启动自动降落*/
-	if((fs.speed_set_h_norm[Z] < 0.1f && imu_data.w_acc[Z]<200) || flag.auto_take_off_land == AUTO_LAND)
+	if ((fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || tof_height_mm < 200)) || flag.auto_take_off_land == AUTO_LAND)
 	{
 		if(ld_delay_cnt>0)		//200ms
 		{
@@ -146,10 +146,10 @@ void land_discriminat(s16 dT_ms)
 	/*意义是：如果向上推了油门，就需要等垂直方向加速度小于200cm/s2 保持200ms才开始检测*/
 	if(ld_delay_cnt <= 0 && (flag.thr_low || flag.auto_take_off_land == AUTO_LAND) )
 	{
-		/*油门最终输出量小于250并且没有在手动解锁上锁过程中，持续1.5秒，认为着陆，然后上锁*/
+		/*油门最终输出量小于250并且没有在手动解锁上锁过程中，持续0.5秒，认为着陆，然后上锁*/
 		if(mc.ct_val_thr<250 && flag.fly_ready == 1 && flag.locking != 2)//ABS(wz_spe_f1.out <20 ) //还应当 与上速度条件，速度小于正20厘米每秒。
 		{
-			if(landing_cnt<1500)
+			if(landing_cnt<500)
 			{
 				landing_cnt += dT_ms;
 			}
@@ -159,8 +159,8 @@ void land_discriminat(s16 dT_ms)
 				flying_cnt = 0;
 				flag.taking_off = 0;
 
-				landing_cnt =0;
-				flag.fly_ready =0;
+				landing_cnt = 0;
+				flag.fly_ready = 0;
 
 				flag.flying = 0;
 			}
@@ -265,14 +265,14 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 	land_discriminat(dT_ms);
 
 	/*倾斜过大上锁*/
-	if(rolling_flag.rolling_step == ROLL_END)
+	// if(rolling_flag.rolling_step == ROLL_END)
+	// {
+	if(imu_data.z_vec[Z]<0.70f)//40度  ////////////////////////////////////////*************************** 倾斜过大上锁，慎用。
 	{
-		if(imu_data.z_vec[Z]<0.25f)//75度  ////////////////////////////////////////*************************** 倾斜过大上锁，慎用。
-		{
 
-			flag.fly_ready = 0;
-		}
+		flag.fly_ready = 0;
 	}
+	// }
 
 	/*校准中，复位重力方向*/
 	if(sensor.gyr_CALIBRATE != 0 || sensor.acc_CALIBRATE != 0 ||sensor.acc_z_auto_CALIBRATE)
@@ -478,6 +478,7 @@ u8 DY_Debug_Height_Mode = 0;
 u8 DY_Debug_Yaw_Mode = 0;
 u32 DY_Task_ExeTime = 0;
 u8 DY_CountTime_Flag = 0;
+u8 DY_RoundTime_Flag = 0;
 u8 DY_Land_Flag = 0;
 
 void Flight_Mode_Set(u8 dT_ms)
@@ -597,39 +598,66 @@ void Flight_Mode_Set(u8 dT_ms)
 		if (DY_CountTime_Flag)
 		{
 			DY_Task_ExeTime += dT_ms;
-			if ((DY_Task_ExeTime >= 3000) && (DY_Land_Flag == 0))
+			if (DY_RoundTime_Flag <= 4)
 			{
-				dy_pit = 20;
-				dy_rol = 0;
-				DY_Land_Flag = 1;
+				if ((DY_Task_ExeTime >= 0) && (DY_Land_Flag == 0))
+				{
+					dy_pit = 20;
+					dy_rol = 20;
+					DY_Land_Flag = 1;
+				}
+				if ((DY_Task_ExeTime >= 1900) && (DY_Land_Flag == 1))
+				{
+					dy_pit = 0;
+					dy_rol = 0;
+					DY_Land_Flag = 2;
+				}
+				if ((DY_Task_ExeTime >= 2000) && (DY_Land_Flag == 2))
+				{
+					dy_pit = 20;
+					dy_rol = -20;
+					DY_Land_Flag = 3;
+				}
+				if ((DY_Task_ExeTime >= 3900) && (DY_Land_Flag == 3))
+				{
+					dy_pit = 0;
+					dy_rol = 0;
+					DY_Land_Flag = 4;
+				}
+				if ((DY_Task_ExeTime >= 4000) && (DY_Land_Flag == 4))
+				{
+					dy_pit = -20;
+					dy_rol = -20;
+					DY_Land_Flag = 5;
+				}
+				if ((DY_Task_ExeTime >= 5900) && (DY_Land_Flag == 5))
+				{
+					dy_pit = 0;
+					dy_rol = 0;
+					DY_Land_Flag = 6;
+				}
+				if ((DY_Task_ExeTime >= 6000) && (DY_Land_Flag == 6))
+				{
+					dy_pit = -20;
+					dy_rol = 20;
+					DY_Land_Flag = 7;
+				}
+				if ((DY_Task_ExeTime >= 7900) && (DY_Land_Flag == 7))
+				{
+					dy_pit = 0;
+					dy_rol = 0;
+					DY_Land_Flag = 8;
+				}
+				if ((DY_Task_ExeTime >= 9000) && (DY_Land_Flag == 8))
+				{
+					DY_Land_Flag = 0;
+					DY_Task_ExeTime = 0;
+					DY_RoundTime_Flag += 1;
+				}
 			}
-			if ((DY_Task_ExeTime >= 4500) && (DY_Land_Flag == 1))
+			if (DY_RoundTime_Flag >= 7)
 			{
-				dy_pit = 0;
-				dy_rol = 20;
-				DY_Land_Flag = 2;
-			}
-			if ((DY_Task_ExeTime >= 6000) && (DY_Land_Flag == 2))
-			{
-				dy_pit = -20;
-				dy_rol = 0;
-				DY_Land_Flag = 3;
-			}
-			if ((DY_Task_ExeTime >= 7500) && (DY_Land_Flag == 3))
-			{
-				dy_pit = 0;
-				dy_rol = -20;
-				DY_Land_Flag = 4;
-			}
-			if ((DY_Task_ExeTime >= 9000) && (DY_Land_Flag == 4))
-			{
-				dy_pit = 0;
-				dy_rol = 0;
-				DY_Land_Flag = 5;
-			}
-			if ((DY_Task_ExeTime >= 10500) && (DY_Land_Flag == 5))
-			{
-				DY_Land_Flag = 6;
+				DY_Land_Flag = 9;
 				one_key_land(); //一键降落
 			}
 		}
@@ -637,20 +665,21 @@ void Flight_Mode_Set(u8 dT_ms)
 	else
 	{
 		flag.flight_mode = LOC_HOLD;
-		if ((DY_Debug_Mode == 1) || (DY_Debug_Height_Mode == 1))
+		if ((DY_Debug_Mode == 1) || (DY_Debug_Height_Mode == 1) || (DY_Debug_Yaw_Mode == 1))
 		{
 			//初始化
-			DY_Debug_Mode = 0;
-			DY_Debug_Height_Mode = 0;
-			DY_Debug_Yaw_Mode = 0;
 			dy_pit = 0;
 			dy_rol = 0;
 			dy_height = 0;
-			dy_yaw = 0;
+			dy_yaw = 0.0f;
 			DY_CountTime_Flag = 0;
 			DY_Land_Flag = 0;
+			DY_RoundTime_Flag = 0;
 			DY_Task_ExeTime = 0;
 		}
+		DY_Debug_Mode = 0;
+		DY_Debug_Height_Mode = 0;
+		DY_Debug_Yaw_Mode = 0;
 	}
 
 }

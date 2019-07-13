@@ -145,10 +145,6 @@ void unlock(u8 dT_ms)
 		}
 		//进行最终的时间积分判断，摇杆必须满足条件unlock_time时间后，才会执行锁定和解锁动作
 		stick_function_check_longpress(dT_ms,&unlock_f,unlock_time,stick_fun_0,f,&flag.fly_ready);
-
-		//强制锁定
-		if (CH_N[AUX2] < -200)
-			flag.fly_ready = 0;
 	}
 	else
 	{
@@ -166,6 +162,19 @@ void unlock(u8 dT_ms)
 	else
 	{
 		flag.thr_low = 1;//油门拉低
+	}
+
+	//强制锁定
+	if (CH_N[AUX2] < -200)
+	{
+		if (flag.flying)
+		{
+			flag.auto_take_off_land = AUTO_LAND;
+		}
+		else
+		{
+			flag.fly_ready = 0;
+		}
 	}
 }
 
