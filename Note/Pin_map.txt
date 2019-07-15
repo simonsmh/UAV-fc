@@ -42,13 +42,13 @@ PG1——PWM5——控制电机6（预留）
 PA6——UART2_RX----IAP升级
 PA7——UART2_TX
 
-PJ0——UART3_RX
+PJ0——UART3_RX----OpenMV
 PJ1——UART3_TX
 
 PK0——UART4_RX----数传
 PK1——UART4_TX
 
-PC6——UART5_RX----OpenMV
+PC6——UART5_RX
 PC7——UART5_TX
 
 /**********ATK-PMW3901光流模块**********/

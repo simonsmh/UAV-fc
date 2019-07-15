@@ -131,17 +131,18 @@ static s16 ld_delay_cnt ;
 void land_discriminat(s16 dT_ms)
 {
 	/*油门归一值小于0.1并且垂直方向加速度小于阈值  或者启动自动降落*/
-	if ((fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || tof_height_mm < 200)) || flag.auto_take_off_land == AUTO_LAND)
-	{
-		if(ld_delay_cnt>0)		//200ms
+	if (flag.auto_take_off_land != AUTO_TAKE_OFF && ((fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || tof_height_mm < 200)) || flag.auto_take_off_land == AUTO_LAND))
 		{
-			ld_delay_cnt -= dT_ms;
-		}
+			if (ld_delay_cnt > 0) //200ms
+			{
+				ld_delay_cnt -= dT_ms;
+			}
 	}
 	else
 	{
 		ld_delay_cnt = 200;
 	}
+
 
 	/*意义是：如果向上推了油门，就需要等垂直方向加速度小于200cm/s2 保持200ms才开始检测*/
 	if(ld_delay_cnt <= 0 && (flag.thr_low || flag.auto_take_off_land == AUTO_LAND) )
@@ -584,81 +585,24 @@ void Flight_Mode_Set(u8 dT_ms)
 
 	if(CH_N[AUX2] > 200)
 	{
-		if ((DY_Debug_Height_Mode == 0) && (DY_Debug_Mode == 0))
+		if (DY_Debug_Height_Mode == 0)
 		{
 			DY_Debug_Height_Mode = 1;
-			DY_Debug_Mode = 1;
 			one_key_take_off();
 		}
-		if ((tof_height_mm >= 1000) && (DY_CountTime_Flag == 0))
+		if (tof_height_mm >= 1000 && DY_CountTime_Flag == 0)
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 			DY_CountTime_Flag = 1;
 		}
 		if (DY_CountTime_Flag)
 		{
-			DY_Task_ExeTime += dT_ms;
-			if (DY_RoundTime_Flag <= 4)
+			DY_Task_ExeTime++;
+			if (DY_Task_ExeTime >= 1000 && DY_Debug_Mode == 0)
 			{
-				if ((DY_Task_ExeTime >= 0) && (DY_Land_Flag == 0))
-				{
-					dy_pit = 20;
-					dy_rol = 20;
-					DY_Land_Flag = 1;
-				}
-				if ((DY_Task_ExeTime >= 1900) && (DY_Land_Flag == 1))
-				{
-					dy_pit = 0;
-					dy_rol = 0;
-					DY_Land_Flag = 2;
-				}
-				if ((DY_Task_ExeTime >= 2000) && (DY_Land_Flag == 2))
-				{
-					dy_pit = 20;
-					dy_rol = -20;
-					DY_Land_Flag = 3;
-				}
-				if ((DY_Task_ExeTime >= 3900) && (DY_Land_Flag == 3))
-				{
-					dy_pit = 0;
-					dy_rol = 0;
-					DY_Land_Flag = 4;
-				}
-				if ((DY_Task_ExeTime >= 4000) && (DY_Land_Flag == 4))
-				{
-					dy_pit = -20;
-					dy_rol = -20;
-					DY_Land_Flag = 5;
-				}
-				if ((DY_Task_ExeTime >= 5900) && (DY_Land_Flag == 5))
-				{
-					dy_pit = 0;
-					dy_rol = 0;
-					DY_Land_Flag = 6;
-				}
-				if ((DY_Task_ExeTime >= 6000) && (DY_Land_Flag == 6))
-				{
-					dy_pit = -20;
-					dy_rol = 20;
-					DY_Land_Flag = 7;
-				}
-				if ((DY_Task_ExeTime >= 7900) && (DY_Land_Flag == 7))
-				{
-					dy_pit = 0;
-					dy_rol = 0;
-					DY_Land_Flag = 8;
-				}
-				if ((DY_Task_ExeTime >= 9000) && (DY_Land_Flag == 8))
-				{
-					DY_Land_Flag = 0;
-					DY_Task_ExeTime = 0;
-					DY_RoundTime_Flag += 1;
-				}
-			}
-			if (DY_RoundTime_Flag >= 7)
-			{
-				DY_Land_Flag = 9;
-				one_key_land(); //一键降落
+				DY_Debug_Mode = 1;
+				DY_Debug_Yaw_Mode = 1;
+				MAP_UARTCharPut(UART3_BASE, 'H'); //OpenMv开始工作
 			}
 		}
 	}

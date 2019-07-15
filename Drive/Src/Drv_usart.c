@@ -58,7 +58,6 @@ void UART2_IRQHandler(void)
 //    while(MAP_UARTCharsAvail(UART2_BASE))
 //    {
       comdata = (u8)MAP_UARTCharGet(UART2_BASE);
-//      DY_OF_Data_Receive_Prepare(comdata);
 //    }
   }
   if(uart2_status == UART_INT_TX)
@@ -143,7 +142,7 @@ void UART3_IRQHandler(void)
   if(uart3_status == 0x00000030)        //错误处理
   {
     comdata = (u8)MAP_UARTCharGet(UART3_BASE);
-    // DY_DT_Data_Receive_Prepare(comdata);
+    DY_Tracking_Data_Receive_Prepare(comdata);
   }
 
   if(uart3_status == UART_INT_RX)
@@ -154,7 +153,7 @@ void UART3_IRQHandler(void)
 //    while(MAP_UARTCharsAvail(UART3_BASE))
 //    {
       comdata = (u8)MAP_UARTCharGet(UART3_BASE);
-      // DY_DT_Data_Receive_Prepare(comdata);
+      DY_Tracking_Data_Receive_Prepare(comdata);
 //    }
   }
   if(uart3_status == UART_INT_TX)
@@ -297,7 +296,7 @@ void UART5_IRQHandler(void)
   if(uart5_status == 0x00000030)        //错误处理
   {
     comdata = (u8)MAP_UARTCharGet(UART5_BASE);
-    DY_Tracking_Data_Receive_Prepare(comdata);
+    // DY_Tracking_Data_Receive_Prepare(comdata);
   }
 
   if(uart5_status == UART_INT_RX)
@@ -308,7 +307,7 @@ void UART5_IRQHandler(void)
 //    while(MAP_UARTCharsAvail(UART5_BASE))
 //    {
       comdata = (u8)MAP_UARTCharGet(UART5_BASE);
-      DY_Tracking_Data_Receive_Prepare(comdata);
+      // DY_Tracking_Data_Receive_Prepare(comdata);
 //    }
   }
   if(uart5_status == UART_INT_TX)

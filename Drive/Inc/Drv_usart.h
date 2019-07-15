@@ -11,7 +11,6 @@
 
 //void Uart2_Init(u32 bound);
 //void Uart2_Send(u8 *DataToSend, u8 data_num);
-void Uart2_Init(u32 bound);
 
 void Uart3_Init(u32 bound);
 void Uart3_Send(u8 *DataToSend, u8 data_num);
