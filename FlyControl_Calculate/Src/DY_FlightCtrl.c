@@ -41,39 +41,29 @@ void All_PID_Init(void)
 /*控制参数改变任务*/
 void ctrl_parameter_change_task()
 {
-	if(0)
+	if (flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
 		Set_Att_2level_Ki(0);
-
+		Set_Att_1level_Ki(0);
 	}
 	else
 	{
-		if(flag.auto_take_off_land ==AUTO_TAKE_OFF)
-		{
-
-			Set_Att_1level_Ki(2);
-		}
-		else
-		{
-
-			Set_Att_1level_Ki(1);
-		}
-
+		Set_Att_1level_Ki(1);
 		Set_Att_2level_Ki(1);
 	}
 }
 
 /*一键翻滚（暂无）*/
-void one_key_roll()
-{
-			if(flag.flying && flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
-			{
-				if(rolling_flag.roll_mode==0)
-				{
-					rolling_flag.roll_mode = 1;
-				}
-			}
-}
+// void one_key_roll()
+// {
+// 			if(flag.flying && flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
+// 			{
+// 				if(rolling_flag.roll_mode==0)
+// 				{
+// 					rolling_flag.roll_mode = 1;
+// 				}
+// 			}
+// }
 
 // static u16 one_key_taof_start;
 // /*一键起飞任务（主要功能为延迟）*/
@@ -130,50 +120,52 @@ float stop_baro_hpf;
 static s16 ld_delay_cnt ;
 void land_discriminat(s16 dT_ms)
 {
-	/*油门归一值小于0.1并且垂直方向加速度小于阈值  或者启动自动降落*/
-	if (flag.auto_take_off_land != AUTO_TAKE_OFF && ((fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || tof_height_mm < 200)) || flag.auto_take_off_land == AUTO_LAND))
+	if (flag.auto_take_off_land != AUTO_TAKE_OFF)
+	{
+		/*油门归一值小于0.1并且垂直方向加速度小于阈值*/
+		if (fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || tof_height_mm < 120))
 		{
 			if (ld_delay_cnt > 0) //200ms
 			{
 				ld_delay_cnt -= dT_ms;
 			}
-	}
-	else
-	{
-		ld_delay_cnt = 200;
-	}
-
-
-	/*意义是：如果向上推了油门，就需要等垂直方向加速度小于200cm/s2 保持200ms才开始检测*/
-	if(ld_delay_cnt <= 0 && (flag.thr_low || flag.auto_take_off_land == AUTO_LAND) )
-	{
-		/*油门最终输出量小于250并且没有在手动解锁上锁过程中，持续0.5秒，认为着陆，然后上锁*/
-		if(mc.ct_val_thr<250 && flag.fly_ready == 1 && flag.locking != 2)//ABS(wz_spe_f1.out <20 ) //还应当 与上速度条件，速度小于正20厘米每秒。
+		}
+		else
 		{
-			if(landing_cnt<500)
+			ld_delay_cnt = 200;
+		}
+
+		/*意义是：如果向上推了油门，就需要等垂直方向加速度小于200cm/s2 保持200ms才开始检测*/
+		if (ld_delay_cnt <= 0 && flag.thr_low )
+		{
+			/*油门最终输出量小于250并且没有在手动解锁上锁过程中，持续0.5秒，认为着陆，然后上锁*/
+			if(mc.ct_val_thr<250 && flag.fly_ready == 1 && flag.locking != 2)//ABS(wz_spe_f1.out <20 ) //还应当 与上速度条件，速度小于正20厘米每秒。
 			{
-				landing_cnt += dT_ms;
+				if(landing_cnt<300)
+				{
+					landing_cnt += dT_ms;
+				}
+				else
+				{
+
+					flying_cnt = 0;
+					flag.taking_off = 0;
+
+					landing_cnt = 0;
+					flag.fly_ready = 0;
+
+					flag.flying = 0;
+				}
 			}
 			else
 			{
-
-				flying_cnt = 0;
-				flag.taking_off = 0;
-
 				landing_cnt = 0;
-				flag.fly_ready = 0;
-
-				flag.flying = 0;
 			}
 		}
 		else
 		{
-			landing_cnt = 0;
+			landing_cnt  = 0;
 		}
-	}
-	else
-	{
-		landing_cnt  = 0;
 	}
 }
 

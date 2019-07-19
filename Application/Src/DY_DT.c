@@ -126,6 +126,7 @@ void DY_DT_Data_Exchange(void)
 	{
 		f.send_senser = 0;
 		DY_DT_Send_Senser(sensor.Acc[X],sensor.Acc[Y],sensor.Acc[Z],sensor.Gyro[X],sensor.Gyro[Y],sensor.Gyro[Z],mag.val[X],mag.val[Y],mag.val[Z]);
+		//DY_DT_Send_Senser(motor[0], motor[1], motor[2], motor[3], sensor.Gyro[Y], sensor.Gyro[Z], mag.val[X], mag.val[Y], mag.val[Z]);
 		//DY_DT_Send_Senser(imu_data.w_acc[X] * 100, imu_data.w_acc[Y] * 100, imu_data.w_acc[Z] * 100, imu_data.h_acc[X] * 100, imu_data.h_acc[Y] * 100, imu_data.h_acc[Z] * 100, imu_data.z_vec[X] * 100, imu_data.z_vec[Y] * 100, imu_data.z_vec[Z] * 100);
 	}
 /////////////////////////////////////////////////////////////////////////////////////

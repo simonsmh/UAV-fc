@@ -9,6 +9,7 @@
 #include "Drv_icm20602.h"
 #include "DY_MagProcess.h"
 #include "Drv_led.h"
+#include "DY_Imu.h"
 
 //摇杆触发值，摇杆值范围为+-500，超过300属于触发范围
 #define UN_YAW_VALUE  300
@@ -57,23 +58,31 @@ void unlock(u8 dT_ms)
 	{
 		if(sens_hd_check.acc_ok && sens_hd_check.gyro_ok)
 		{
-			if(sens_hd_check.baro_ok)
+			if (ABS(imu_data.rol) <= 0.5 && ABS(imu_data.pit) <= 0.5)
 			{
-				if(flag.sensor_ok  )//传感器正常时，才允许解锁
+				if(sens_hd_check.baro_ok)
 				{
-					flag.unlock_en = 1;	//允许解锁标志位
-					if(LED_state == 10) LED_state = 0;
+					if(flag.sensor_ok  )//传感器正常时，才允许解锁
+					{
+						flag.unlock_en = 1;	//允许解锁标志位
+						if(LED_state == 10) LED_state = 0;
+					}
+					else
+					{
+						flag.unlock_en = 0;//传感器异常，不允许解锁
+						if(LED_state >115) LED_state = 10;
+					}
 				}
 				else
 				{
-					flag.unlock_en = 0;//传感器异常，不允许解锁
-					if(LED_state >115) LED_state = 10;
+					LED_state = 82;
+					flag.unlock_en = 0;//气压计异常，不允许解锁。
 				}
 			}
 			else
 			{
-				LED_state = 82;
-				flag.unlock_en = 0;//气压计异常，不允许解锁。
+				LED_state = 81;
+				flag.unlock_en = 0;//磁力计异常，不允许解锁
 			}
 		}
 		else
@@ -90,6 +99,7 @@ void unlock(u8 dT_ms)
 	//所有功能判断，都要油门在低值时才进行
 	if(CH_N[CH_THR] < -UN_THR_VALUE  )
 	{
+		flag.thr_low = 1; //油门拉低
 		//判断用户是否想要上锁、解锁
 		if(ABS(CH_N[CH_YAW])>0.1f*UN_YAW_VALUE && CH_N[CH_PIT]< -0.1f*UN_PIT_VALUE)
 		{
@@ -148,6 +158,7 @@ void unlock(u8 dT_ms)
 	}
 	else
 	{
+		flag.thr_low = 0; //油门非低
 		flag.locking = 0; //油门高
 		if(flag.fly_ready == 2)
 		{
@@ -155,14 +166,6 @@ void unlock(u8 dT_ms)
 		}
 	}
 
-	if(CH_N[CH_THR]>-350)
-	{
-		flag.thr_low = 0;//油门非低
-	}
-	else
-	{
-		flag.thr_low = 1;//油门拉低
-	}
 
 	//强制锁定
 	if (CH_N[AUX2] < -200)

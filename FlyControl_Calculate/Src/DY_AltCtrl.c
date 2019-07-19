@@ -20,23 +20,11 @@ s16 dy_height = 0;
 ////extern _filter_1_st wz_spe_f1;
 void Auto_Take_Off_Land_Task(u8 dT_ms)//
 {
-	if(flag.fly_ready)		//解锁
-	{
-		if(flag.taking_off)		//起飞
-		{
-			if(flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
-			{
-				flag.auto_take_off_land = AUTO_TAKE_OFF;
-			}
-		}
-	}
-	else
+	if (flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
 	{
 		auto_taking_off_speed = 0;
-		flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
 	}
-
-	if(flag.auto_take_off_land == AUTO_TAKE_OFF)
+	else if(flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
 		auto_taking_off_speed = 40;
 	}
@@ -52,6 +40,21 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 		auto_taking_off_speed = -40;
 	}
 
+	// if(flag.fly_ready)		//解锁
+	// {
+	// 	if(flag.taking_off)		//起飞
+	// 	{
+	// 		if(flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
+	// 		{
+	// 			flag.auto_take_off_land = AUTO_TAKE_OFF;
+	// 		}
+	// 	}
+	// }
+	// else
+	// {
+	// 	auto_taking_off_speed = 0;
+	// 	flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
+	// }
 	// static u16 take_off_ok_cnt;
 	// one_key_take_off_task(dT_ms);
 	// take_off_ok_cnt += dT_ms;

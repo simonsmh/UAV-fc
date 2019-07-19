@@ -52,7 +52,7 @@ arg_1_kp：调整角速度响应速度，不震荡的前提下，尽量越高越好。
 
 若增大arg_1_kd已经不能抑制震荡，需要将kp和kd同时减小。
 */
-#define CTRL_1_KI_START 0.f
+// #define CTRL_1_KI_START 0.f
 
 /*角速度环PID参数初始化*/
 void Att_1level_PID_Init()
@@ -96,14 +96,10 @@ void Set_Att_1level_Ki(u8 mode)
 	{
 		arg_1[ROL].ki = arg_1[PIT].ki = 0;
 	}
-	else if(mode == 1)
+	else
 	{
 		arg_1[ROL].ki = DY_Parame.set.pid_att_1level[ROL][KI];
 		arg_1[PIT].ki = DY_Parame.set.pid_att_1level[PIT][KI];
-	}
-	else
-	{
-		arg_1[ROL].ki = arg_1[PIT].ki = CTRL_1_KI_START;
 	}
 }
 

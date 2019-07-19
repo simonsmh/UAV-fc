@@ -18,15 +18,15 @@ enum
    null=0,
    takeoff,
    landing,
-	
+
     s_up_down_2, //小幅度上升下降2次
-	
+
     s_yaw_pn_2,  //小幅度左右转2次
     b_yaw_pn_1,  //大幅度左右转1次
 
     s_rol_pn_2,  //小幅度左右2次
     b_rol_pn_1,  //大幅度左右1次
-    
+
     s_pit_pn_2,  //小幅度前后2次
     b_pit_pn_1,  //大幅度前后1次
 
@@ -37,22 +37,22 @@ enum
 
     pit_jump_pn_2,  //前后跳2次
     rol_jump_pn_2,  //左右跳2次
-    
-    rol_up_down_2,  //蛇形上升下降	  
+
+    rol_up_down_2,  //蛇形上升下降
     yaw_up_dowm_1,  //旋转上升下降		2
     pit_rol_pn_2,   //蛇形前进后退		3
-		
+
 };
 
 typedef struct
 {
 	s16 alt_ctrl_speed_set;
-	s16 speed_set_h[VEC_XYZ];	
+	s16 speed_set_h[VEC_XYZ];
 	float speed_set_h_cms[VEC_XYZ];
-	
+
 	float speed_set_h_norm[VEC_XYZ];
 	float speed_set_h_norm_lpf[VEC_XYZ];
-	
+
 }_flight_state_st;
 extern _flight_state_st fs;
 /* Exported constants --------------------------------------------------------*/
@@ -72,13 +72,13 @@ void All_PID_Init(void);
 void one_key_take_off(void);
 void one_key_land(void);
 
-void one_key_roll(void);
-void app_one_key_roll(void);
-void app_one_key_roll_reset(void);
+// void one_key_roll(void);
+// void app_one_key_roll(void);
+// void app_one_key_roll_reset(void);
 void one_key_take_off_task(u16 dt_ms);
 
 void ctrl_parameter_change_task(void);
-	
+
 void Flight_State_Task(u8,s16 *CH_N);
 
 void Flight_Mode_Set(u8 dT_ms);
