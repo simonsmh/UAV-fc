@@ -71,29 +71,34 @@ void unlock(u8 dT_ms)
 					{
 						flag.unlock_en = 0;//传感器异常，不允许解锁
 						if(LED_state >115) LED_state = 10;
+						DY_DT_SendString("Sensor Error!", sizeof("Sensor Error!"));
 					}
 				}
 				else
 				{
 					LED_state = 82;
 					flag.unlock_en = 0;//气压计异常，不允许解锁。
+					DY_DT_SendString("Baro Error!", sizeof("Baro Error!"));
 				}
 			}
 			else
 			{
 				LED_state = 81;
 				flag.unlock_en = 0;//磁力计异常，不允许解锁
+				DY_DT_SendString("ROL/PIT Error!", sizeof("ROL/PIT Error!"));
 			}
 		}
 		else
 		{
 			LED_state = 80;
 			flag.unlock_en = 0;//惯性传感器异常，不允许解锁。
+			DY_DT_SendString("ACC/Gyro Error!", sizeof("ACC/Gyro Error!"));
 		}
 	}
 	else
 	{
 		flag.unlock_en = 0;//电池电压异常，不允许解锁
+		DY_DT_SendString("Out of Battery Error!", sizeof("Out of Battery Error!"));
 	}
 	////////////////////////////////////////////
 	//所有功能判断，都要油门在低值时才进行
