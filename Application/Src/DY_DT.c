@@ -30,8 +30,7 @@
 #define MYHWADDR	0x05
 #define SWJADDR		0xAF
 
-#define PARNUM		100
-s32 ParValList[100];		//参数列表
+s32 ParValList[PARNUM+1]; //参数列表
 
 dt_flag_t f;				//需要发送数据的标志
 u8 data_to_send[50];	    //发送数据缓存
@@ -92,7 +91,6 @@ void DY_DT_Data_Exchange(void)
 	}
 
 	if(++cnt>200) cnt = 0;
-/////////////////////////////////////////////////////////////////////////////////////
 	if(f.send_version)
 	{
 		f.send_version = 0;
@@ -103,39 +101,31 @@ void DY_DT_Data_Exchange(void)
 		DY_DT_SendParame(f.paraToSend);
 		f.paraToSend = 0xffff;
 	}
-///////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_status)
 	{
 		f.send_status = 0;
 		DY_DT_Send_Status(imu_data.rol,imu_data.pit,imu_data.yaw,wcz_hei_fus.out,0,flag.fly_ready);
 	}
-///////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_speed)
 	{
 		f.send_speed = 0;
 		DY_DT_Send_Speed(loc_ctrl_1.fb[Y],loc_ctrl_1.fb[X],loc_ctrl_1.fb[Z]);
 	}
-///////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_user)
 	{
 		f.send_user = 0;
 		DY_DT_Send_User();
 	}
-///////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_senser)
 	{
 		f.send_senser = 0;
 		DY_DT_Send_Senser(sensor.Acc[X],sensor.Acc[Y],sensor.Acc[Z],sensor.Gyro[X],sensor.Gyro[Y],sensor.Gyro[Z],mag.val[X],mag.val[Y],mag.val[Z]);
-		//DY_DT_Send_Senser(motor[0], motor[1], motor[2], motor[3], sensor.Gyro[Y], sensor.Gyro[Z], mag.val[X], mag.val[Y], mag.val[Z]);
-		//DY_DT_Send_Senser(imu_data.w_acc[X] * 100, imu_data.w_acc[Y] * 100, imu_data.w_acc[Z] * 100, imu_data.h_acc[X] * 100, imu_data.h_acc[Y] * 100, imu_data.h_acc[Z] * 100, imu_data.z_vec[X] * 100, imu_data.z_vec[Y] * 100, imu_data.z_vec[Z] * 100);
 	}
-/////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_senser2)
 	{
 		f.send_senser2 = 0;
 		DY_DT_Send_Senser2(baro_height,ref_tof_height);//原始数据
 	}
-/////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_rcdata)		//发送遥控器数据
 	{
 		f.send_rcdata = 0;
@@ -155,21 +145,11 @@ void DY_DT_Data_Exchange(void)
 		}
 		DY_DT_Send_RCData(CH_GCS[2],CH_GCS[3],CH_GCS[0],CH_GCS[1],CH_GCS[4],CH_GCS[5],CH_GCS[6],CH_GCS[7],0,0);
 	}
-/////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_motopwm)
 	{
 		f.send_motopwm = 0;
-#if MOTORSNUM == 8
-		DY_DT_Send_MotoPWM(motor[0],motor[1],motor[2],motor[3],motor[4],motor[5],motor[6],motor[7]);
-#elif MOTORSNUM == 6
-		DY_DT_Send_MotoPWM(motor[0],motor[1],motor[2],motor[3],motor[4],motor[5],0,0);
-#elif MOTORSNUM == 4
 		DY_DT_Send_MotoPWM(motor[0],motor[1],motor[2],motor[3],0,0,0,0);
-#else
-
-#endif
 	}
-/////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_power)
 	{
 		f.send_power = 0;
@@ -187,13 +167,7 @@ void DY_DT_Data_Exchange(void)
 		DY_DT_Send_VER();
 		f.send_vef = 0;
 	}
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
 	DY_DT_Data_Receive_Anl_Task();		//数传数据解析
-/////////////////////////////////////////////////////////////////////////////////////
-//	Usb_Hid_Send();
-/////////////////////////////////////////////////////////////////////////////////////
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -214,50 +188,50 @@ void DY_DT_Data_Receive_Anl_Task()
 void DY_DT_Data_Receive_Prepare(u8 data)
 {
 	static u8 _data_len = 0;
-	static u8 state = 0;
+	static u8 _state = 0;
 
-	if(state==0&&data==0xAA)	//帧头0xAA
+	if (_state == 0 && data == 0xAA) //帧头0xAA
 	{
-		state=1;
+		_state = 1;
 		DT_RxBuffer[0]=data;
 	}
-	else if(state==1&&data==0xAF)	//数据源，0xAF表示数据来自上位机
+	else if (_state == 1 && data == 0xAF) //数据源，0xAF表示数据来自上位机
 	{
-		state=2;
+		_state = 2;
 		DT_RxBuffer[1]=data;
 	}
-	else if(state==2)		//数据目的地
+	else if (_state == 2) //数据目的地
 	{
-		state=3;
+		_state = 3;
 		DT_RxBuffer[2]=data;
 	}
-	else if(state==3)		//功能字
+	else if (_state == 3) //功能字
 	{
-		state=4;
+		_state = 4;
 		DT_RxBuffer[3]=data;
 	}
-	else if(state==4)		//数据长度
+	else if (_state == 4) //数据长度
 	{
-		state = 5;
+		_state = 5;
 		DT_RxBuffer[4]=data;
 		_data_len = data;
 		DT_data_cnt = 0;
 	}
-	else if(state==5&&_data_len>0)
+	else if (_state == 5 && _data_len > 0)
 	{
 		_data_len--;
 		DT_RxBuffer[5+DT_data_cnt++]=data;
 		if(_data_len==0)
-			state = 6;
+			_state = 6;
 	}
-	else if(state==6)
+	else if (_state == 6)
 	{
-		state = 0;
+		_state = 0;
 		DT_RxBuffer[5+DT_data_cnt]=data;
 		ano_dt_data_ok = 1;//DY_DT_Data_Receive_Anl(DT_RxBuffer,DT_data_cnt+5);
 	}
 	else
-		state = 0;
+		_state = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -867,15 +841,10 @@ void DY_DT_SendString(char *str, u8 len)
 	DY_DT_Send_Data(data_to_send, _cnt);
 }
 
-#include "DY_MotionCal.h"
-//#include "DY_OF_Ctrl.h"
-
 void DY_DT_Send_User()
 {
 	u8 _cnt=0;
 	vs16 _temp;
-    vs32 _temp1;
-	vu16 _temp2;
 
 	data_to_send[_cnt++]=0xAA;
 	data_to_send[_cnt++]=MYHWADDR;
@@ -884,11 +853,50 @@ void DY_DT_Send_User()
 	data_to_send[_cnt++]=0;
 ////////////////////////////////////////
 
-    _temp2 = tof_height_mm;
-    data_to_send[_cnt++] = BYTE1(_temp2);
-    data_to_send[_cnt++] = BYTE0(_temp2);
+    _temp = tof_height_mm;
+    data_to_send[_cnt++] = BYTE1(_temp);
+    data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = motor[0];
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = motor[1];
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = motor[2];
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = motor[3];
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.w_acc[X] * 100;
+    data_to_send[_cnt++] = BYTE1(_temp);
+    data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.w_acc[Y] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.w_acc[Z] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.h_acc[X] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.h_acc[Y] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.h_acc[Z] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.z_vec[X] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.z_vec[Y] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
+	_temp = imu_data.z_vec[Z] * 100;
+	data_to_send[_cnt++] = BYTE1(_temp);
+	data_to_send[_cnt++] = BYTE0(_temp);
 
-////////////////////////////////////////
+	////////////////////////////////////////
 	data_to_send[4] = _cnt-5;
 
 	u8 sum = 0;

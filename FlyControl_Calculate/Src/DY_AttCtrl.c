@@ -154,20 +154,8 @@ void Att_2level_Ctrl(float dT_s,s16 *CH_N)
 	att_2l_ct.exp_rol = LIMIT(att_2l_ct.exp_rol,-MAX_ANGLE,MAX_ANGLE);
 	att_2l_ct.exp_pit = LIMIT(att_2l_ct.exp_pit,-MAX_ANGLE,MAX_ANGLE);
 
+	max_yaw_speed = MAX_SPEED_YAW;
 
-	//////////////////////////////////////////////////////////////
-	if(flag.speed_mode == 3)
-	{
-		max_yaw_speed = MAX_SPEED_YAW;
-	}
-	else if(flag.speed_mode == 2 )
-	{
-		max_yaw_speed = 280;
-	}
-	else
-	{
-		max_yaw_speed = 200;
-	}
 	/*摇杆量转换为YAW期望角速度*/
 	att_1l_ct.set_yaw_speed = (s32)(0.0023f *my_deadzone(CH_N[CH_YAW],0,65) *max_yaw_speed);
 	/*最大YAW角速度限幅*/
@@ -262,7 +250,6 @@ void Att_1level_Ctrl(float dT_s)
 	////////////////改变控制参数任务（最小控制周期内）////////////////////////
 	ctrl_parameter_change_task();
 
-
     /*目标角速度赋值*/
      for(u8 i = 0;i<3;i++)
     {
@@ -307,5 +294,3 @@ void Att_1level_Ctrl(float dT_s)
 	mc.ct_val_yaw = LIMIT(mc.ct_val_yaw,-400,400);
 
 }
-
-_rolling_flag_st rolling_flag;

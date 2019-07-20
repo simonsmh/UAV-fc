@@ -16,9 +16,7 @@ static s16 auto_taking_off_speed;
 /***************高度控制变量初始化***************/
 s16 dy_height = 0;
 
-// #define AUTO_TAKE_OFF_KP 2.0f
-////extern _filter_1_st wz_spe_f1;
-void Auto_Take_Off_Land_Task(u8 dT_ms)//
+void Auto_Take_Off_Land_Task()//
 {
 	if (flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
 	{
@@ -39,38 +37,6 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)//
 		DY_Debug_Yaw_Mode = 0;
 		auto_taking_off_speed = -40;
 	}
-
-	// if(flag.fly_ready)		//解锁
-	// {
-	// 	if(flag.taking_off)		//起飞
-	// 	{
-	// 		if(flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
-	// 		{
-	// 			flag.auto_take_off_land = AUTO_TAKE_OFF;
-	// 		}
-	// 	}
-	// }
-	// else
-	// {
-	// 	auto_taking_off_speed = 0;
-	// 	flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
-	// }
-	// static u16 take_off_ok_cnt;
-	// one_key_take_off_task(dT_ms);
-	// take_off_ok_cnt += dT_ms;
-	/***************刘德祥修改***************/
-	// auto_taking_off_speed = AUTO_TAKE_OFF_KP *(DY_Parame.set.auto_take_off_height - wcz_hei_fus.out);
-	//		auto_taking_off_speed = AUTO_TAKE_OFF_KP *(DY_Parame.set.auto_take_off_height - wcz_hei_fus.out);
-	/*******************************/
-	// auto_taking_off_speed = LIMIT(auto_taking_off_speed,0,150);		//限幅 0~150
-	// if(take_off_ok_cnt>=2500 || (DY_Parame.set.auto_take_off_height - wcz_hei_fus.out <5))//(auto_ref_height>AUTO_TAKE_OFF_HEIGHT)
-	// {
-	// 	flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
-	// }
-	// if(take_off_ok_cnt >1000 && ABS(fs.speed_set_h_norm[Z])>0.1f)// 一定已经taking_off
-	// {
-	// 	flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
-	// }
 }
 
 
@@ -90,7 +56,7 @@ void Alt_2level_PID_Init()
 
 void Alt_2level_Ctrl(float dT_s)
 {
-	Auto_Take_Off_Land_Task(1000*dT_s);
+	Auto_Take_Off_Land_Task();
 
 /***************OpenMv控制***************/
 	if(DY_Debug_Height_Mode == 1)
@@ -165,18 +131,9 @@ void Alt_1level_Ctrl(float dT_s)
 	u8 out_en;
 	out_en = (flag.taking_off != 0) ? 1 : 0;
 
-	flag.thr_mode = THR_AUTO;//THR_MANUAL;
-
 	loc_ctrl_1.exp[Z] = fs.alt_ctrl_speed_set + alt_val_2.out;
 
-	if(0) //(flag.thr_mode == THR_MANUAL)
-	{
-		loc_ctrl_1.fb[Z] = 0;
-	}
-	else
-	{
-		loc_ctrl_1.fb[Z] = wcz_spe_fus.out;
-	}
+	loc_ctrl_1.fb[Z] = wcz_spe_fus.out;
 
 	PID_calculate( dT_s,            //周期（单位：秒）
 					0,				//前馈值

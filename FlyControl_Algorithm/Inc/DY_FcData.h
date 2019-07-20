@@ -14,7 +14,7 @@
 /* Exported types ------------------------------------------------------------*/
 
 #define TRUE 1
-#define FALSE 0 
+#define FALSE 0
 
 enum
 {
@@ -43,7 +43,7 @@ enum
       MPU_ITEMS ,
 };
 
-	
+
 enum
 {
       CH_ROL = 0,
@@ -98,10 +98,10 @@ enum _power_alarm
 {
 
       HIGH_POWER = 0,           //电池电量
-      HALF_POWER,
-      LOW_POWER ,
-      LOWEST_POWER, 
-	
+      WARN_POWER,
+      RETURN_HOME_POWER ,
+      LOWEST_POWER,
+
 
 };
 
@@ -111,15 +111,7 @@ enum _flight_mode
       ATT_STAB = 0,             //Attitude stabilization
       LOC_HOLD,
       RETURN_HOME,
-	
-};
 
-//thr_mode
-enum
-{
-      THR_MANUAL = 0,
-      THR_AUTO,
-	
 };
 
 typedef struct
@@ -144,8 +136,8 @@ typedef struct
       u8 motionless;
       u8 power_state;
       u8 wifi_ch_en;
-      u8 rc_loss;	
-      u8 gps_ok;	
+      u8 rc_loss;
+      u8 gps_ok;
       u8 gps_signal_bad;
 
 
@@ -164,14 +156,14 @@ typedef struct
       //飞行状态
       u8 flying;
       u8 auto_take_off_land;
-      u8 home_location_ok;	
+      u8 home_location_ok;
       u8 speed_mode;
-      u8 thr_mode;	
+      u8 thr_mode;
       u8 flight_mode;
       u8 gps_mode_en;
       u8 motor_preparation;
       u8 locked_rotor;
-	
+
 }_flag;
 extern _flag flag;
 
@@ -183,10 +175,10 @@ typedef struct
       u8 of_tof_on;
       u8 baro_on;
       u8 gps_on;
-      
+
       u8 dy_opticalflow_on;     //徳研光流
       u8 dy_pmw3901_on;
-	
+
 }_switch_st;
 extern _switch_st switchs;
 
@@ -200,10 +192,10 @@ typedef struct
       u8 sonar_ok;
       u8 tof_ok;
       u8 of_ok;
-      
+
       u8 dy_opticalflow_ok;     //徳研光流
       u8 dy_pmw3901_ok;
-	
+
 } _sensor_hd_check_st; //Hardware
 extern _sensor_hd_check_st sens_hd_check;
 

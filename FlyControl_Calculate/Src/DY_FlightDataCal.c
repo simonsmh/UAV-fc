@@ -7,7 +7,6 @@
 #include "DY_MotionCal.h"
 #include "Drv_vl53l0x.h"
 #include "Drv_led.h"
-#include "DY_OF.h"
 
 void Fc_Sensor_Get()
 {
@@ -56,30 +55,14 @@ void IMU_Update_Task(u8 dT_ms)
             }
         }
 
-        if(0)
-        {
-            imu_state.gkp = 0.0f;
-            imu_state.gki = 0.0f;
+		/*设置重力互补融合修正kp系数*/
+		imu_state.gkp = 0.3f;//0.4f;
 
-        }
-        else
-        {
-            if(0)
-            {
-                imu_state.gkp = 0.2f;
-            }
-            else
-            {
-                /*设置重力互补融合修正kp系数*/
-                imu_state.gkp = 0.3f;//0.4f;
-            }
+		/*设置重力互补融合修正ki系数*/
+		imu_state.gki = 0.002f;
 
-            /*设置重力互补融合修正ki系数*/
-            imu_state.gki = 0.002f;
-
-            /*设置罗盘互补融合修正ki系数*/
-            imu_state.mkp = 0.2f;
-        }
+		/*设置罗盘互补融合修正ki系数*/
+		imu_state.mkp = 0.2f;
 
         imu_state.M_fix_en = sens_hd_check.mag_ok;		//磁力计修正使能
 
@@ -109,12 +92,6 @@ void WCZ_Acc_Get_Task()//最小周期
 	wcz_acc_use += 0.2f *(imu_data.w_acc[Z] - wcz_acc_use);
 
 }
-
-//void Baro_Get_Task()
-//{
-////			ref_height_get += LIMIT((s32)user_spl0601_get() - ref_height_get,-20,20 );
-////	baro_height =(s32)user_spl0601_get();
-//}
 
 u16 ref_tof_height;
 static u8 baro_offset_ok,tof_offset_ok;
@@ -170,19 +147,11 @@ void WCZ_Fus_Task(u8 dT_ms)
 		baro_fix = baro_fix1 + baro_fix2 - BARO_FIX;//+ baro_fix3;
 	}
 
-	if((sens_hd_check.tof_ok || sens_hd_check.of_ok) && baro_offset_ok) //TOF或者OF硬件正常，且气压计记录相对值以后
+	if(sens_hd_check.tof_ok && baro_offset_ok) //TOF硬件正常，且气压计记录相对值以后
 	{
-		if(switchs.tof_on || switchs.of_tof_on) //TOF数据有效
+		if(switchs.tof_on) //TOF数据有效
 		{
-			if(switchs.of_tof_on) //光流带TOF，光流优先
-			{
-				ref_tof_height = OF_ALT;
-			}
-			else
-			{
-				ref_tof_height = tof_height_mm/10;
-			}
-
+			ref_tof_height = tof_height_mm/10;
 			if(tof_offset_ok == 1)
 			{
 				ref_height_get_2 = ref_tof_height + baro2tof_offset;//TOF参考高度，切换点跟随气压计

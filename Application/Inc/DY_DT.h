@@ -95,7 +95,9 @@ extern dt_flag_t f;
 #define PAR_CENPOSZ			68
 #define PAR_TAKEOFFHIGH		69
 
-extern s32 ParValList[100];
+#define PARNUM              100
+
+extern s32 ParValList[PARNUM+1];
 
 void DY_DT_Data_Receive_Anl_Task(void);
 void DY_DT_Send_VER(void);

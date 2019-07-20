@@ -54,51 +54,70 @@ u16 unlock_time = 200;
 
 void unlock(u8 dT_ms)
 {
-	if( flag.power_state <=2 && para_sta.save_trig == 0)//只有电池电压非最低并且没有操作flash时，才允许进行解锁
+	if( flag.power_state <= 2 && para_sta.save_trig == 0)//只有电池电压非最低并且没有操作flash时，才允许进行解锁
 	{
 		if(sens_hd_check.acc_ok && sens_hd_check.gyro_ok)
 		{
-			if (ABS(imu_data.rol) <= 0.5 && ABS(imu_data.pit) <= 0.5)
+			if (LED_state == 80)
+				LED_state = 0;
+			if (sens_hd_check.baro_ok)
 			{
-				if(sens_hd_check.baro_ok)
+				if (LED_state == 82)
+					LED_state = 0;
+				if (flag.sensor_ok) //传感器正常时，才允许解锁
 				{
-					if(flag.sensor_ok  )//传感器正常时，才允许解锁
+					if (LED_state == 10)
+						LED_state = 0;
+					if (ABS(imu_data.rol) <= 0.5 && ABS(imu_data.pit) <= 0.5)
 					{
-						flag.unlock_en = 1;	//允许解锁标志位
-						if(LED_state == 10) LED_state = 0;
+						flag.unlock_en = 1; //允许解锁标志位
+						if (LED_state == 81)
+							LED_state = 0;
 					}
 					else
 					{
-						flag.unlock_en = 0;//传感器异常，不允许解锁
-						if(LED_state >115) LED_state = 10;
-						DY_DT_SendString("Sensor Error!", sizeof("Sensor Error!"));
+						flag.unlock_en = 0; //磁力计异常，不允许解锁
+						if (LED_state > 115)
+						{
+							LED_state = 81;
+							DY_DT_SendString("ROL/PIT Error!", sizeof("ROL/PIT Error!"));
+						}
 					}
 				}
 				else
 				{
-					LED_state = 82;
-					flag.unlock_en = 0;//气压计异常，不允许解锁。
-					DY_DT_SendString("Baro Error!", sizeof("Baro Error!"));
+					flag.unlock_en = 0; //传感器异常，不允许解锁
+					if (LED_state > 115)
+					{
+						LED_state = 10;
+						DY_DT_SendString("Sensor Error!", sizeof("Sensor Error!"));
+					}
 				}
 			}
 			else
 			{
-				LED_state = 81;
-				flag.unlock_en = 0;//磁力计异常，不允许解锁
-				DY_DT_SendString("ROL/PIT Error!", sizeof("ROL/PIT Error!"));
+				flag.unlock_en = 0; //气压计异常，不允许解锁。
+				if (LED_state > 115)
+				{
+					LED_state = 82;
+					DY_DT_SendString("Baro Error!", sizeof("Baro Error!"));
+				}
 			}
 		}
 		else
 		{
-			LED_state = 80;
-			flag.unlock_en = 0;//惯性传感器异常，不允许解锁。
-			DY_DT_SendString("ACC/Gyro Error!", sizeof("ACC/Gyro Error!"));
+			flag.unlock_en = 0; //惯性传感器异常，不允许解锁。
+			if (LED_state > 115)
+			{
+				LED_state = 80;
+				DY_DT_SendString("ACC/Gyro Error!", sizeof("ACC/Gyro Error!"));
+			}
 		}
 	}
 	else
 	{
 		flag.unlock_en = 0;//电池电压异常，不允许解锁
-		DY_DT_SendString("Out of Battery Error!", sizeof("Out of Battery Error!"));
+		DY_DT_SendString("Battery Error!", sizeof("Battery Error!"));
 	}
 	////////////////////////////////////////////
 	//所有功能判断，都要油门在低值时才进行
@@ -134,11 +153,11 @@ void unlock(u8 dT_ms)
 			stick_fun_0 = 0;
 		}
 
-		u8 f = 0;
+		u8 fr = 0;
 		if(flag.fly_ready)
 		{
 			//如果为解锁状态，最终f=0，将f赋值给flag.fly_ready，飞控完成上锁
-			f = 0;
+			fr = 0;
 			unlock_time = 1000;
 		}
 		else
@@ -146,11 +165,11 @@ void unlock(u8 dT_ms)
 			//如果飞控为锁定状态，并且允许解锁，则f=2，将f赋值给flag.fly_ready，飞控解锁完成
 			if(flag.unlock_en)
 			{
-				f = 2;
+				fr = 2;
 			}
 			else
 			{
-				f = 0;
+				fr = 0;
 				if(LED_state >115)
 				{
 					LED_state = 18;
@@ -159,7 +178,7 @@ void unlock(u8 dT_ms)
 			unlock_time = 200;
 		}
 		//进行最终的时间积分判断，摇杆必须满足条件unlock_time时间后，才会执行锁定和解锁动作
-		stick_function_check_longpress(dT_ms,&unlock_f,unlock_time,stick_fun_0,f,&flag.fly_ready);
+		stick_function_check_longpress(dT_ms, &unlock_f, unlock_time, stick_fun_0, fr, &flag.fly_ready);
 	}
 	else
 	{
@@ -270,7 +289,7 @@ void fail_safe_check(u8 dT_ms) //dT秒调用一次
 			}
 
 			if(flag.fly_ready)
-			flag.auto_take_off_land = AUTO_LAND; //如果解锁，自动降落标记置位
+				flag.auto_take_off_land = AUTO_LAND; //如果解锁，自动降落标记置位
 
 		}
 		else if(cnt2<=-2) //认为信号正常

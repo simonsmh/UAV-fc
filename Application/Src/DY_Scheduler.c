@@ -23,112 +23,108 @@
 #include "DY_MotorCtrl.h"
 #include "DY_MagProcess.h"
 #include "DY_Power.h"
-#include "DY_OF.h"
 
 #include "OpticalFlow.h"        //ATK-PMW3901光流模块
 #include "DY_Flight_Log.h"      //OpenmMv控制
 
 u32 test_dT_1000hz[3],test_rT[6];
 static void Loop_1000Hz(void)	//1ms执行一次
-{ 
+{
 	test_dT_1000hz[0] = test_dT_1000hz[1];
 	test_rT[3] = test_dT_1000hz[1] = GetSysTime_us ();
 	test_dT_1000hz[2] = (u32)(test_dT_1000hz[1] - test_dT_1000hz[0]) ;
-    //////////////////////////////////////////////////////////////////////	
+    //////////////////////////////////////////////////////////////////////
 	/*传感器数据读取*/
 	Fc_Sensor_Get();            //读取ICM20602（1ms）、AK8975+SPL0601（20ms）原始数据
-	
+
 	/*惯性传感器数据准备*/
 	Sensor_Data_Prepare(1);     //ICM20602数据处理（滤波、转换）==>陀螺仪（度每秒、弧度每秒）+加速度计（厘米每平方秒）
-	
+
 	/*姿态解算更新*/
 	IMU_Update_Task(1);         //使用四元数法进行姿态更新
-	
+
 	/*获取WC_Z加速度*/
 	WCZ_Acc_Get_Task();         //地理坐标系下Z轴的运动加速度==>wcz_acc_use
-	
+
 	/*飞行状态任务*/
 	Flight_State_Task(1,CH_N);
-	
+
 	/*开关状态任务*/
 	Swtich_State_Task(1);       //判断ATK-PMW3901光流模块、匿名光流、TOF数据是否有效
-	
+
 	/*姿态角速度环控制*/
 	Att_1level_Ctrl(1e-3f);
-	
+
 	/*电机输出控制*/
 	Motor_Ctrl_Task(1);
-		
+
 	/*数传数据交换*/
 	DY_DT_Data_Exchange();
-    //////////////////////////////////////////////////////////////////////	
+    //////////////////////////////////////////////////////////////////////
 	test_rT[4]= GetSysTime_us ();
 	test_rT[5] = (u32)(test_rT[4] - test_rT[3]) ;
 }
 
 static void Loop_500Hz(void)	//2ms执行一次
-{	
+{
 	/*OpenMv控制*/
 	DY_Flight_Control();
 }
 
 static void Loop_200Hz(void)	//5ms执行一次
 {
-  
+
 }
 
 static void Loop_100Hz(void)	//10ms执行一次
 {
     test_rT[0]= GetSysTime_us ();
-    //////////////////////////////////////////////////////////////////////	
+    //////////////////////////////////////////////////////////////////////
 	/*遥控器数据处理*/
 	RC_duty_task(10);
-	
+
 	/*飞行模式设置任务*/
 	Flight_Mode_Set(10);
-	
+
 	/*获取姿态角（ROLL PITCH YAW）*/
 	calculate_RPY();
-	
+
 	/*姿态角度环控制*/
 	Att_2level_Ctrl(10e-3f,CH_N);
-	
+
 	/*位置速度环控制*/
 	Loc_1level_Ctrl(10,CH_N);
-	
+
 	/*高度数据融合任务*/
 	WCZ_Fus_Task(10);
-	
+
 	/*高度速度环(内环)控制*/
 	Alt_1level_Ctrl(10e-3f);
-	
+
 	/*高度环(外环)控制*/
 	Alt_2level_Ctrl(10e-3f);
-	
-	/*--*/	
-	DY_OF_DataAnl_Task(10);
-    
+
     /*光流数据融合*/
     if(sens_hd_check.dy_pmw3901_ok)
     {
       OpticalFlow_DataFusion_Task();
     }
 
-	/*灯光控制*/	
+	/*灯光控制*/
 	LED_Task(10);
-    //////////////////////////////////////////////////////////////////////		
+    //////////////////////////////////////////////////////////////////////
     test_rT[1]= GetSysTime_us ();
-    test_rT[2] = (u32)(test_rT[1] - test_rT[0]) ;	    
+    test_rT[2] = (u32)(test_rT[1] - test_rT[0]) ;
 }
 
 static void Loop_50Hz(void)	//20ms执行一次
-{	
+{
 	/*罗盘数据处理任务*/
 	Mag_Update_Task(20);
 }
 
 static void Loop_20Hz(void)	//50ms执行一次
-{	
+{
 	/*TOF激光任务*/
 	Drv_Vl53_RunTask();
 	/*电压相关任务*/
@@ -142,7 +138,7 @@ static void Loop_2Hz(void)	//500ms执行一次
 }
 
 //系统任务配置，创建不同执行频率的“线程”
-static sched_task_t sched_tasks[] = 
+static sched_task_t sched_tasks[] =
 {
 	{Loop_1000Hz,1000,  0, 0},
 	{Loop_500Hz , 500,  0, 0},
@@ -188,7 +184,7 @@ void Scheduler_Run(void)
 			sched_tasks[index].last_run = tnow;
 			//执行线程函数，使用的是函数指针
 			sched_tasks[index].task_func();
-		}	 
+		}
 	}
 }
 

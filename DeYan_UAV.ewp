@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>30</version>
+                <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -58,7 +58,7 @@
                 </option>
                 <option>
                     <name>RTDescription</name>
-                    <state>To be used with the normal configuration of the C/C++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
+                    <state>Use the normal configuration of the C/C++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
                 </option>
                 <option>
                     <name>OGProductVersion</name>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.22.2.15993</state>
+                    <state>8.40.1.21529</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -112,11 +112,11 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -204,13 +204,18 @@
                     <name>TrustZone</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>TrustZoneModes</name>
+                    <version>0</version>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -276,7 +281,7 @@
                 <option>
                     <name>CCAllowList</name>
                     <version>1</version>
-                    <state>00000000</state>
+                    <state>10010100</state>
                 </option>
                 <option>
                     <name>CCDebugInfo</name>
@@ -373,16 +378,16 @@
                 </option>
                 <option>
                     <name>CCOptLevel</name>
-                    <state>1</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CCOptStrategy</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
-                    <state>1</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CompilerMisraRules98</name>
@@ -445,7 +450,7 @@
                 <option>
                     <name>CCOptStrategySlave</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>2</state>
                 </option>
                 <option>
                     <name>CCGuardCalls</name>
@@ -474,6 +479,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -698,7 +707,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>20</version>
+                <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -838,8 +847,7 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\Library\DeYan_UAV.a</state>
-                    <state>$PROJ_DIR$\FlyControl_Algorithm\FlyControl_Algorithm.a</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -1022,6 +1030,30 @@
                     <name>IlinkLocaleSelect</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>IlinkTrustzoneImportLibraryOut</name>
+                    <state>DeYan_UAV_import_lib.o</state>
+                </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryFile2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySymbol2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySegment2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryAlign2</name>
+                    <state></state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1041,7 +1073,7 @@
                 </option>
                 <option>
                     <name>IarchiveOutput</name>
-                    <state>G:\09.无人机上课资料收集\德研四轴飞行器相关资料\code\MSP432飞控(加密 + bootloader)\DeYan_UAV\Debug\Exe\DeYan_UAV.a</state>
+                    <state>D:\Projects\DeYan_UAV\Debug\Exe\DeYan_UAV.a</state>
                 </option>
             </data>
         </settings>
@@ -1061,7 +1093,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>30</version>
+                <version>31</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1116,7 +1148,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state></state>
+                    <state>8.40.1.21529</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1128,7 +1160,7 @@
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
-                    <state></state>
+                    <state>Default	None</state>
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
@@ -1162,11 +1194,11 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state></state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -1183,12 +1215,12 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
                     <name>GFPUDeviceSlave</name>
-                    <state>-</state>
+                    <state>Default	None</state>
                 </option>
                 <option>
                     <name>FPU2</name>
@@ -1206,7 +1238,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -1254,13 +1286,18 @@
                     <name>TrustZone</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>TrustZoneModes</name>
+                    <version>0</version>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1374,7 +1411,7 @@
                 </option>
                 <option>
                     <name>OutputFile</name>
-                    <state></state>
+                    <state>$FILE_BNAME$.o</state>
                 </option>
                 <option>
                     <name>CCLibConfigHeader</name>
@@ -1415,7 +1452,7 @@
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>CompilerMisraRules98</name>
@@ -1507,6 +1544,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -1728,7 +1769,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>20</version>
+                <version>23</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1745,7 +1786,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>###Unitialized###</state>
+                    <state>DeYan_UAV.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -2040,6 +2081,30 @@
                     <name>IlinkLocaleSelect</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>IlinkTrustzoneImportLibraryOut</name>
+                    <state>###Unitialized###</state>
+                </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryFile2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySymbol2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinarySegment2</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>IlinkRawBinaryAlign2</name>
+                    <state></state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2075,22 +2140,19 @@
             <name>$PROJ_DIR$\Application\Src\BSP_Init.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Application\Src\DY_DT.c</name>
+            <name>$PROJ_DIR$\application\Src\DY_DT.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\Application\Src\DY_Flight_Log.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Application\Src\DY_OF.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\Application\Src\DY_Parameter.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Application\Src\DY_power.c</name>
+            <name>$PROJ_DIR$\application\Src\DY_power.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Application\Src\DY_RC.c</name>
+            <name>$PROJ_DIR$\application\Src\DY_RC.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\Application\Src\DY_Scheduler.c</name>
@@ -2180,7 +2242,7 @@
     <group>
         <name>FlyControl_Algorithm</name>
         <file>
-            <name>$PROJ_DIR$\FlyControl_Algorithm\FlyControl_Algorithm.a</name>
+            <name>$PROJ_DIR$\FlyControl_Algorithm\src\FlyControl_Algorithm.a</name>
         </file>
     </group>
     <group>

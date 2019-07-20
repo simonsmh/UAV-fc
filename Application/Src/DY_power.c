@@ -3,6 +3,7 @@
 #include "DY_Filter.h"
 #include "Drv_led.h"
 #include "DY_Math.h"
+#include "DY_DT.h"
 
 float Plane_Votage = 0;
 static float voltage_f = 30000;
@@ -35,22 +36,35 @@ void Power_UpdateTask(u8 dT_ms)
 
 	Plane_Votage = voltage_f *0.001f;
 
-	if(Plane_Votage<DY_Parame.set.lowest_power_voltage)
+	if(Plane_Votage < DY_Parame.set.lowest_power_voltage)
 	{
-		flag.power_state = 3;
+		flag.power_state = LOWEST_POWER;
+		if (LED_state > 115)
+		{
+			LED_state = 1;
+			DY_DT_SendString("Battery Failure!", sizeof("Battery Failure!"));
+		}
 	}
-
-	if(Plane_Votage<DY_Parame.set.warn_power_voltage)
+	else if(Plane_Votage < DY_Parame.set.return_home_power_voltage)
 	{
-		if(LED_state>115)
+		flag.power_state = RETURN_HOME_POWER;
+		if (LED_state > 115)
+		{
+			LED_state = 1;
+			DY_DT_SendString("Out of Battery!", sizeof("Out of Battery!"));
+		}
+	}
+	else if (Plane_Votage < DY_Parame.set.warn_power_voltage)
+	{
+		flag.power_state = WARN_POWER;
+		if (LED_state > 115)
 		{
 			LED_state = 1;
 			DY_DT_SendString("Low Power!", sizeof("Low Power!"));
 		}
 	}
-
-	if(Plane_Votage<DY_Parame.set.return_home_power_voltage)
+	else
 	{
-
+		flag.power_state = HIGH_POWER;
 	}
 }
