@@ -5,7 +5,6 @@
 **********************************************************************************/
 #include "DY_DT.h"
 #include "DY_RC.h"
-//#include "DY_USB.h"
 #include "Drv_usart.h"
 #include "Drv_time.h"
 #include "DY_IMU.h"
@@ -19,6 +18,7 @@
 #include "DY_FlightDataCal.h"
 #include "Drv_vl53l0x.h"
 #include "DY_LocCtrl.h"
+#include "DY_AttCtrl.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 //数据拆分宏定义，在发送大于1字节的数据类型时，比如int16、float等，需要把数据拆分成单独字节进行发送
@@ -114,7 +114,16 @@ void DY_DT_Data_Exchange(void)
 	else if(f.send_user)
 	{
 		f.send_user = 0;
-		DY_DT_Send_User();
+		DY_DT_Send_User(1, tof_height_mm, 0);
+		DY_DT_Send_User(2, att_1l_ct.exp_angular_velocity[X] * 100, att_1l_ct.fb_angular_velocity[X] * 100);
+		DY_DT_Send_User(3, att_1l_ct.exp_angular_velocity[Y] * 100, att_1l_ct.fb_angular_velocity[Y] * 100);
+		DY_DT_Send_User(4, att_1l_ct.exp_angular_velocity[Z] * 100, att_1l_ct.fb_angular_velocity[Z] * 100);
+		DY_DT_Send_User(5, att_2l_ct.exp_rol * 100, att_2l_ct.fb_rol * 100);
+		DY_DT_Send_User(6, att_2l_ct.exp_pit * 100, att_2l_ct.fb_pit * 100);
+		DY_DT_Send_User(7, att_2l_ct.exp_yaw * 100, att_2l_ct.fb_yaw * 100);
+		DY_DT_Send_User(8, loc_ctrl_1.exp[X] * 10, loc_ctrl_1.fb[X] * 10);
+		DY_DT_Send_User(9, loc_ctrl_1.exp[Y] * 10, loc_ctrl_1.fb[Y] * 10);
+		DY_DT_Send_User(10, loc_ctrl_1.exp[Z] * 10, loc_ctrl_1.fb[Z] * 10);
 	}
 	else if(f.send_senser)
 	{
@@ -841,68 +850,26 @@ void DY_DT_SendString(char *str, u8 len)
 	DY_DT_Send_Data(data_to_send, _cnt);
 }
 
-void DY_DT_Send_User()
+void DY_DT_Send_User(u8 num, s16 data_1, s16 data_2)
 {
 	u8 _cnt=0;
-	vs16 _temp;
 
 	data_to_send[_cnt++]=0xAA;
 	data_to_send[_cnt++]=MYHWADDR;
 	data_to_send[_cnt++]=SWJADDR;
-	data_to_send[_cnt++]=0xf1; //用户数据
+	data_to_send[_cnt++]=0xF0+num; //用户数据，1开始
 	data_to_send[_cnt++]=0;
-////////////////////////////////////////
 
-    _temp = tof_height_mm;
-    data_to_send[_cnt++] = BYTE1(_temp);
-    data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = motor[0];
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = motor[1];
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = motor[2];
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = motor[3];
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.w_acc[X] * 100;
-    data_to_send[_cnt++] = BYTE1(_temp);
-    data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.w_acc[Y] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.w_acc[Z] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.h_acc[X] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.h_acc[Y] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.h_acc[Z] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.z_vec[X] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.z_vec[Y] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
-	_temp = imu_data.z_vec[Z] * 100;
-	data_to_send[_cnt++] = BYTE1(_temp);
-	data_to_send[_cnt++] = BYTE0(_temp);
+	data_to_send[_cnt++]=BYTE1(data_1);
+	data_to_send[_cnt++]=BYTE0(data_1);
+	data_to_send[_cnt++]=BYTE1(data_2);
+	data_to_send[_cnt++]=BYTE0(data_2);
 
-	////////////////////////////////////////
 	data_to_send[4] = _cnt-5;
 
 	u8 sum = 0;
 	for(u8 i=0;i<_cnt;i++)
 		sum += data_to_send[i];
-
 	data_to_send[_cnt++]=sum;
 
 	DY_DT_Send_Data(data_to_send, _cnt);

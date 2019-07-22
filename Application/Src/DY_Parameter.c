@@ -139,7 +139,7 @@ void DY_Parame_Read(void)
 void DY_Parame_Write_task(u16 dT_ms)
 {
 	//因为写入flash耗时较长，飞控做了一个特殊逻辑，在解锁后，是不进行参数写入的，此时会置一个需要写入标志位，等飞机降落锁定后，再写入参数，提升飞行安全性
-	//为了避免连续更新两个参数，造成flash写入两次，我们飞控加入一个延时逻辑，参数改变后3秒，才进行写入操作，可以一次写入多项参数，降低flash擦写次数
+	//为了避免连续更新两个参数，造成flash写入两次，我们飞控加入一个延时逻辑，参数改变后1秒，才进行写入操作，可以一次写入多项参数，降低flash擦写次数
 	if(para_sta.save_en)
 	{
 		if(para_sta.save_trig == 1) 	//如果触发存储标记1
@@ -150,9 +150,9 @@ void DY_Parame_Write_task(u16 dT_ms)
 			para_sta.save_trig = 2;   	//触发存储标记2
 		}
 
-		if(para_sta.save_trig == 2) 	//如果触发存储标记2，持续时间大于3s，才执行存储
+		if(para_sta.save_trig == 2) 	//如果触发存储标记2，持续时间大于1s，才执行存储
 		{
-			if(para_sta.time_delay<3000)
+			if(para_sta.time_delay<1000)
 			{
 				para_sta.time_delay += dT_ms;
 			}

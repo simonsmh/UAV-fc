@@ -285,9 +285,9 @@ void Att_1level_Ctrl(float dT_s)
      }
 
 	/*赋值，最终比例调节*/
-	mc.ct_val_rol =                   FINAL_P *ct_val[ROL];
-	mc.ct_val_pit = X_PROPORTION_X_Y *FINAL_P *ct_val[PIT];
-	mc.ct_val_yaw =                   FINAL_P *ct_val[YAW];
+	mc.ct_val_rol = FINAL_P * ct_val[ROL];
+	mc.ct_val_pit = FINAL_P * ct_val[PIT];
+	mc.ct_val_yaw = FINAL_P * ct_val[YAW];
 	/*输出量限幅*/
 	mc.ct_val_rol = LIMIT(mc.ct_val_rol,-1000,1000);
 	mc.ct_val_pit = LIMIT(mc.ct_val_pit,-1000,1000);

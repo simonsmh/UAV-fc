@@ -47,7 +47,6 @@
 
 #define FINAL_P 			0.3f            //电机输出量比例
 #define ANGULAR_VELOCITY_PID_INTE_D_LIM 300/FINAL_P
-#define X_PROPORTION_X_Y 1.0f           //proportion
 
 #define MAX_THR_SET    85               //最大油门百分比 %
 #define THR_INTE_LIM_SET   70           //油门积分百分比 %

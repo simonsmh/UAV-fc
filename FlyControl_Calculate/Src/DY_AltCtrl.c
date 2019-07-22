@@ -16,26 +16,34 @@ static s16 auto_taking_off_speed;
 /***************高度控制变量初始化***************/
 s16 dy_height = 0;
 
-void Auto_Take_Off_Land_Task()//
+void Auto_Take_Off_Land_Task()
 {
 	if (flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
 	{
 		auto_taking_off_speed = 0;
 	}
-	else if(flag.auto_take_off_land == AUTO_TAKE_OFF)
+	else if (flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
 		auto_taking_off_speed = 40;
 	}
-	else if(flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
+	else if (flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
 	{
-		auto_taking_off_speed = 0;
+		if (auto_taking_off_speed > 0)
+		{
+			auto_taking_off_speed -= 1;
+		}
+		else
+		{
+			auto_taking_off_speed = 0;
+			flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
+		}
 	}
-	else if(flag.auto_take_off_land == AUTO_LAND)
+	else if (flag.auto_take_off_land == AUTO_LAND)
 	{
 		DY_Debug_Mode = 0;
 		DY_Debug_Height_Mode = 0;
 		DY_Debug_Yaw_Mode = 0;
-		auto_taking_off_speed = -40;
+		auto_taking_off_speed = -35 - fs.speed_set_h[Z];
 	}
 }
 

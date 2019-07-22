@@ -16,6 +16,7 @@
 #include "Drv_led.h"
 #include "DY_RC.h"
 #include "Drv_vl53l0x.h"
+#include "DY_Flight_Log.h"
 
 /*PID参数初始化*/
 void All_PID_Init(void)
@@ -75,17 +76,35 @@ void one_key_land()
 
 _flight_state_st fs;
 
-s16 flying_cnt,landing_cnt;
+s16 flying_cnt, ld_delay_cnt, landing_cnt, autolanding_cnt;
 
 /*降落检测*/
 extern u16 ref_tof_height;
-static s16 ld_delay_cnt ;
 void land_discriminat(s16 dT_ms)
 {
-	if (flag.auto_take_off_land != AUTO_TAKE_OFF)
+	if (flag.auto_take_off_land == AUTO_LAND)
 	{
-		/*油门归一值小于0.1并且垂直方向加速度小于阈值*/
-		if (fs.speed_set_h_norm[Z] < 0.1f && (imu_data.w_acc[Z] < 200 || ref_tof_height < 12))
+		/*自动模式，激光高度低于低于140mm阈值即可锁定*/
+		if (tof_height_mm > 0 && tof_height_mm < 140)
+		{
+			if (autolanding_cnt < 200)
+			{
+				autolanding_cnt += dT_ms;
+			}
+			else
+			{
+				flag.fly_ready = 0;
+			}
+		}
+		else
+		{
+			autolanding_cnt = 0;
+		}
+	}
+	else
+	{
+		/*手动模式，摇杆油门小于阈值，垂直方向加速度小于阈值，保持200ms，开始下一次判断*/
+		if (fs.speed_set_h_norm[Z] < 0.12f && imu_data.w_acc[Z] < 200)
 		{
 			if (ld_delay_cnt > 0) //200ms
 			{
@@ -97,13 +116,13 @@ void land_discriminat(s16 dT_ms)
 			ld_delay_cnt = 200;
 		}
 
-		/*意义是：如果向上推了油门，就需要等垂直方向加速度小于200cm/s2 保持200ms才开始检测*/
-		if (ld_delay_cnt <= 0 && flag.thr_low )
+		/*手动模式，摇杆油门始终小于阈值，电机油门最终输出量小于250，在解锁状态中，没有在手动解锁上锁过程中，持续200ms，认为着陆，然后上锁*/
+		if(ld_delay_cnt <= 0 && flag.thr_low)
 		{
 			/*油门最终输出量小于250并且没有在手动解锁上锁过程中，持续200ms，认为着陆，然后上锁*/
-			if(mc.ct_val_thr<250 && flag.fly_ready == 1 && flag.locking != 2)//ABS(wz_spe_f1.out <20 ) //还应当 与上速度条件，速度小于正20厘米每秒。
+			if (mc.ct_val_thr < 250 && flag.fly_ready == 1 && flag.locking != 2) //ABS(wz_spe_f1.out <20 ) //还应当 与上速度条件，速度小于正20厘米每秒。
 			{
-				if(landing_cnt<200)
+				if (landing_cnt < 200)
 				{
 					landing_cnt += dT_ms;
 				}
@@ -119,7 +138,7 @@ void land_discriminat(s16 dT_ms)
 		}
 		else
 		{
-			landing_cnt  = 0;
+			landing_cnt = 0;
 		}
 	}
 }
@@ -242,10 +261,13 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 	/*飞行状态复位*/
 	if(flag.fly_ready == 0)
 	{
+		autolanding_cnt = 0;
 		flag.flying = 0;
+		ld_delay_cnt = 200;
 		landing_cnt = 0;
 		flag.taking_off = 0;
 		flying_cnt = 0;
+		flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
 	}
 }
 
@@ -376,7 +398,7 @@ void Flight_Mode_Set(u8 dT_ms)
 			DY_Debug_Height_Mode = 1;
 			one_key_take_off();
 		}
-		if (ref_tof_height >= 100 && DY_CountTime_Flag == 0)
+		if (ref_tof_height >= 50 && DY_CountTime_Flag == 0)
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 			DY_CountTime_Flag = 1;
@@ -395,16 +417,13 @@ void Flight_Mode_Set(u8 dT_ms)
 			}
 		}
 	}
-	else
+	else if (CH_N[AUX2] < 200 && CH_N[AUX2] > -200)
 	{
 		flag.flight_mode = LOC_HOLD;
 		if ((DY_Debug_Mode == 1) || (DY_Debug_Height_Mode == 1) || (DY_Debug_Yaw_Mode == 1))
 		{
 			//初始化
-			dy_pit = 0;
-			dy_rol = 0;
-			dy_height = 0;
-			dy_yaw = 0.0f;
+			dy_flag.stop = 1;
 			DY_CountTime_Flag = 0;
 			DY_Task_ExeTime = 0;
 		}
@@ -412,6 +431,11 @@ void Flight_Mode_Set(u8 dT_ms)
 		DY_Debug_Height_Mode = 0;
 		DY_Debug_Yaw_Mode = 0;
 	}
+	else
+	{
+
+	}
+
 
 }
 

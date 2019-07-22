@@ -117,7 +117,6 @@ void unlock(u8 dT_ms)
 	else
 	{
 		flag.unlock_en = 0;//电池电压异常，不允许解锁
-		DY_DT_SendString("Battery Error!", sizeof("Battery Error!"));
 	}
 	////////////////////////////////////////////
 	//所有功能判断，都要油门在低值时才进行
@@ -302,7 +301,7 @@ void fail_safe_check(u8 dT_ms) //dT秒调用一次
 					LED_state = 0;
 
 					if(flag.taking_off)
-					flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 			}
 		}
 
