@@ -11,7 +11,7 @@ void DY_Tracking_Data_Receive_Prepare(u8 data)
 {
 	static u8 _data_len = 0;
 	static u8 state = 0;
-	
+
 	if(state==0&&data==0xAA)	//ึกอท0xAA
 	{
 		state=1;
@@ -52,9 +52,9 @@ void DY_Tracking_DataAnl(uint8_t *data_buf,uint8_t num)
 	for(u8 i=0;i<(num-1);i++)
 		sum += *(data_buf+i);
 	if(!(sum==*(data_buf+num-1)))		return;		//ะฃั้
-	
+
 	DY_Direction = *(data_buf+3);
-	
+
 	if(*(data_buf+1)==0X89)
 	{
 		DY_Speed_S = (int16_t)(*(data_buf+5)<<8)|*(data_buf+4);
@@ -63,7 +63,7 @@ void DY_Tracking_DataAnl(uint8_t *data_buf,uint8_t num)
 	{
 		DY_Speed_F = ((int16_t)(*(data_buf+5)<<8)|*(data_buf+4)) * 0.01;
 	}
-	
+
 	if((DY_Direction == 'C') || (DY_Direction == 'F'))
 	{
 		if(DY_Direction == 'C')
@@ -100,5 +100,5 @@ void DY_Tracking_DataAnl(uint8_t *data_buf,uint8_t num)
 		dy_flag.stop = 1;
     else if(DY_Direction == 'E')
 		dy_flag.land = 1;
-	
+
 }
