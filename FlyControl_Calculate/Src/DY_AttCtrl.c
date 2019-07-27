@@ -103,20 +103,6 @@ void Set_Att_1level_Ki(u8 mode)
 	}
 }
 
-void Set_Att_2level_Ki(u8 mode)
-{
-	if(mode == 0)
-	{
-		arg_2[ROL].ki = arg_2[PIT].ki = 0;
-	}
-	else
-	{
-		arg_2[ROL].ki = DY_Parame.set.pid_att_2level[ROL][KI];
-		arg_2[PIT].ki = DY_Parame.set.pid_att_2level[PIT][KI];
-	}
-}
-
-
 _att_2l_ct_st att_2l_ct;
 
 static s32 max_yaw_speed,set_yaw_av_tmp;
@@ -248,9 +234,16 @@ static float ct_val[4];
 void Att_1level_Ctrl(float dT_s)
 {
 	////////////////改变控制参数任务（最小控制周期内）////////////////////////
-	ctrl_parameter_change_task();
+	if (flag.auto_take_off_land == AUTO_TAKE_OFF)
+	{
+		Set_Att_1level_Ki(0);
+	}
+	else
+	{
+		Set_Att_1level_Ki(1);
+	}
 
-    /*目标角速度赋值*/
+	/*目标角速度赋值*/
      for(u8 i = 0;i<3;i++)
     {
         att_1l_ct.exp_angular_velocity[i] = val_2[i].out;

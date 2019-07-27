@@ -298,10 +298,7 @@ void fail_safe_check(u8 dT_ms) //dT秒调用一次
 			flag.rc_loss = 0;
 			if(LED_state == 11 || LED_state == 9)
 			{
-					LED_state = 0;
-
-					if(flag.taking_off)
-						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+				LED_state = 0;
 			}
 		}
 

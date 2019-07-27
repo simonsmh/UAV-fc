@@ -35,14 +35,10 @@ void Auto_Take_Off_Land_Task()
 		else
 		{
 			auto_taking_off_speed = 0;
-			flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
 		}
 	}
 	else if (flag.auto_take_off_land == AUTO_LAND)
 	{
-		DY_Debug_Mode = 0;
-		DY_Debug_Height_Mode = 0;
-		DY_Debug_Yaw_Mode = 0;
 		auto_taking_off_speed = -35 - fs.speed_set_h[Z];
 	}
 }

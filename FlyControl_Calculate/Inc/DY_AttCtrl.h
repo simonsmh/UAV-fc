@@ -36,7 +36,6 @@ void Att_1level_PID_Init(void);
 void Att_2level_PID_Init(void);
 
 void Set_Att_1level_Ki(u8 mode);
-void Set_Att_2level_Ki(u8 mode);
 
 void Att_1level_Ctrl(float dT);
 void Att_2level_Ctrl(float dT, s16 *CH_N);

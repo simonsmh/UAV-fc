@@ -38,8 +38,6 @@ void All_PID_Init(void);
 void one_key_take_off(void);
 void one_key_land(void);
 
-void ctrl_parameter_change_task(void);
-
 void Flight_State_Task(u8,s16 *CH_N);
 
 void Flight_Mode_Set(u8 dT_ms);

@@ -38,21 +38,6 @@ void All_PID_Init(void)
 
 }
 
-/*控制参数改变任务*/
-void ctrl_parameter_change_task()
-{
-	if (flag.auto_take_off_land == AUTO_TAKE_OFF)
-	{
-		Set_Att_1level_Ki(0);
-		Set_Att_2level_Ki(0);
-	}
-	else
-	{
-		Set_Att_1level_Ki(1);
-		Set_Att_2level_Ki(1);
-	}
-}
-
 /*一键起飞*/
 void one_key_take_off()
 {
@@ -94,6 +79,10 @@ void land_discriminat(s16 dT_ms)
 			else
 			{
 				flag.fly_ready = 0;
+				/*手动模式交换*/
+				DY_Debug_Mode = 0;
+				DY_Debug_Height_Mode = 0;
+				DY_Debug_Yaw_Mode = 0;
 			}
 		}
 		else
@@ -101,7 +90,7 @@ void land_discriminat(s16 dT_ms)
 			autolanding_cnt = 0;
 		}
 	}
-	else
+	else if (DY_Debug_Height_Mode == 0)
 	{
 		/*手动模式，摇杆油门小于阈值，垂直方向加速度小于阈值，保持200ms，开始下一次判断*/
 		if (fs.speed_set_h_norm[Z] < 0.12f && imu_data.w_acc[Z] < 200)
@@ -370,52 +359,62 @@ void Swtich_State_Task(u8 dT_ms)
 u8 DY_Debug_Mode = 0;   //启用OpenMv控制
 u8 DY_Debug_Height_Mode = 0;
 u8 DY_Debug_Yaw_Mode = 0;
-
+u8 DY_OpenMV_Flag = 0;
 void Flight_Mode_Set(u8 dT_ms)
 {
 	LED_Switch();
+	flag.flight_mode = LOC_HOLD; //定高悬停
 
-	if(CH_N[AUX1]<-200)		        //-500`-200
+	if(CH_N[AUX1]<-200)
 	{
-		flag.flight_mode = ATT_STAB;		//姿态模式
-		MAP_UARTCharPut(UART4_BASE, 'H');   //OpenMv开始工作
+		MAP_UARTCharPut(UART4_BASE, 'H'); //OpenMv开始工作
 	}
-	else if(CH_N[AUX1]<200)		//-200~200
+	else if(CH_N[AUX1]<200)
 	{
-		flag.flight_mode = LOC_HOLD;		//定高悬停
+
 	}
-	else		                    //200~500
+	else
 	{
-		flag.flight_mode = LOC_HOLD;		//定高悬停
-        one_key_land();		                //一键降落
+		one_key_land();		                //一键降落
 	}
 
 	if(CH_N[AUX2] > 200)
 	{
-		if (DY_Debug_Height_Mode == 0)
+		if (flag.taking_off == 0)
 		{
-			DY_Debug_Height_Mode = 1;
-			one_key_take_off();
+			if (DY_Debug_Height_Mode == 0)
+			{
+				flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
+				DY_Debug_Height_Mode = 1;
+				DY_Debug_Mode = 1;
+				DY_Debug_Yaw_Mode = 1;
+				one_key_take_off();
+			}
 		}
-		if (ref_tof_height >= 70)
+		else
 		{
-			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
-			DY_Debug_Mode = 1;
-			DY_Debug_Yaw_Mode = 1;
-			MAP_UARTCharPut(UART4_BASE, 'H'); //OpenMv开始工作
+			if ((ref_tof_height >= 70 || wcz_hei_fus.out >= 70) && DY_OpenMV_Flag == 0)
+			{
+				flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+				DY_OpenMV_Flag = 1;
+			}
+			if (DY_OpenMV_Flag == 1)
+			{
+				MAP_UARTCharPut(UART4_BASE, 'H'); //OpenMv开始工作
+			}
 		}
 	}
-	else if ((CH_N[AUX2] < 200) && (CH_N[AUX2] > -200))
+	else if (CH_N[AUX2] > -200)
 	{
-		flag.flight_mode = LOC_HOLD;
-		if ((DY_Debug_Mode == 1) || (DY_Debug_Height_Mode == 1) || (DY_Debug_Yaw_Mode == 1))
-		{
-			//初始化
-			dy_flag.stop = 1;
-		}
-		DY_Debug_Mode = 0;
-		DY_Debug_Height_Mode = 0;
-		DY_Debug_Yaw_Mode = 0;
+		if (flag.taking_off == 0)
+			{
+				//初始化
+				dy_flag.stop = 1;
+				DY_Debug_Mode = 0;
+				DY_Debug_Height_Mode = 0;
+				DY_Debug_Yaw_Mode = 0;
+				DY_OpenMV_Flag = 0;
+			}
 	}
 	else
 	{
