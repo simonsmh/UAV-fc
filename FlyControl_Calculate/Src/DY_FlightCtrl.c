@@ -220,6 +220,19 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 	/*调用检测着陆的函数*/
 	land_discriminat(dT_ms);
 
+	/*激光锁定*/
+	if (switchs.tof_on == 0)
+	{
+		if (flag.flying)
+		{
+			flag.auto_take_off_land = AUTO_LAND;
+		}
+		else
+		{
+			flag.fly_ready = 0;
+		}
+	}
+
 	/*倾斜过大上锁*/
 	if (imu_data.z_vec[Z] < 0.70f) //40度
 	{
@@ -359,15 +372,16 @@ void Swtich_State_Task(u8 dT_ms)
 u8 DY_Debug_Mode = 0;   //启用OpenMv控制
 u8 DY_Debug_Height_Mode = 0;
 u8 DY_Debug_Yaw_Mode = 0;
+u32 DY_Task_ExeTime = 0;
 u8 DY_OpenMV_Flag = 0;
 void Flight_Mode_Set(u8 dT_ms)
 {
 	LED_Switch();
-	flag.flight_mode = LOC_HOLD; //定高悬停
+	flag.flight_mode = LOC_HOLD;					//定高悬停
 
 	if(CH_N[AUX1]<-200)
 	{
-		MAP_UARTCharPut(UART4_BASE, 'H'); //OpenMv开始工作
+		MAP_UARTCharPut(UART4_BASE, 'H');			//OpenMv开始工作
 	}
 	else if(CH_N[AUX1]<200)
 	{
@@ -375,36 +389,59 @@ void Flight_Mode_Set(u8 dT_ms)
 	}
 	else
 	{
-		one_key_land();		                //一键降落
+		one_key_land();		                		//一键降落
 	}
 
-	if(CH_N[AUX2] > 200)
+	if(CH_N[AUX2] > 200)							//一键起飞
 	{
-		if (flag.taking_off == 0)
+		if (flag.auto_take_off_land != AUTO_LAND)	//降落时屏蔽
 		{
-			if (DY_Debug_Height_Mode == 0)
+			if (flag.taking_off == 0)				//非起飞状态
 			{
-				flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
-				DY_Debug_Height_Mode = 1;
-				DY_Debug_Mode = 1;
-				DY_Debug_Yaw_Mode = 1;
-				one_key_take_off();
+				if (DY_Debug_Height_Mode == 0)		//仅调用一次
+				{
+					flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
+					DY_Debug_Height_Mode = 1;
+					DY_Debug_Mode = 1;
+					DY_Debug_Yaw_Mode = 1;
+					one_key_take_off();
+				}
 			}
-		}
-		else
-		{
-			if ((ref_tof_height >= 70 || wcz_hei_fus.out >= 70) && DY_OpenMV_Flag == 0)
+			else									//起飞状态
 			{
-				flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
-				DY_OpenMV_Flag = 1;
-			}
-			if (DY_OpenMV_Flag == 1)
-			{
-				MAP_UARTCharPut(UART4_BASE, 'H'); //OpenMv开始工作
+				if (DY_OpenMV_Flag == 0)			//OpenMv初始化前执行定高
+				{
+					if (ref_tof_height >= 70 || wcz_hei_fus.out >= 70)
+					{
+						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+						DY_Task_ExeTime += dT_ms;
+					}
+					else
+					{
+						if (switchs.tof_on)			//防止高度不符,激光工作时继续起飞
+						{
+							flag.auto_take_off_land = AUTO_TAKE_OFF;
+						}
+						else						//激光出错,立即降落!
+						{
+							flag.auto_take_off_land = AUTO_LAND;
+						}
+						DY_Task_ExeTime = 0;
+					}
+					if(DY_Task_ExeTime >= 1000)		//满足定高一秒
+					{
+						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+						DY_OpenMV_Flag = 1;
+					}
+				}
+				else
+				{
+					MAP_UARTCharPut(UART4_BASE, 'H');	//OpenMv开始工作
+				}
 			}
 		}
 	}
-	else if (CH_N[AUX2] > -200)
+	else if (CH_N[AUX2] > -200) 						//初始化一键起飞
 	{
 		if (flag.taking_off == 0)
 			{
@@ -413,12 +450,20 @@ void Flight_Mode_Set(u8 dT_ms)
 				DY_Debug_Mode = 0;
 				DY_Debug_Height_Mode = 0;
 				DY_Debug_Yaw_Mode = 0;
+				DY_Task_ExeTime = 0;
 				DY_OpenMV_Flag = 0;
 			}
 	}
-	else
+	else												//强制锁定
 	{
-
+		if (flag.flying)
+		{
+			flag.auto_take_off_land = AUTO_LAND;
+		}
+		else
+		{
+			flag.fly_ready = 0;
+		}
 	}
 
 
