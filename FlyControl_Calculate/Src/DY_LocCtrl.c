@@ -41,28 +41,14 @@ static float fb_speed_fix[2];
 /*位置速度环*/
 void Loc_1level_Ctrl(u16 dT_ms,s16 *CH_N)
 {
-	if(switchs.dy_opticalflow_on || switchs.dy_pmw3901_on)		//光流数据有效
+	if(switchs.dy_pmw3901_on)		//光流数据有效
 	{
-
 		loc_ctrl_1.exp[X] = fs.speed_set_h[X];
 		loc_ctrl_1.exp[Y] = fs.speed_set_h[Y];
-
-        if(switchs.dy_pmw3901_on)                   //ATK-PMW3901光流模块
-        {
-          loc_ctrl_1.fb[X] = DY_PMW_OF_DX2;
-          loc_ctrl_1.fb[Y] = DY_PMW_OF_DY2;
-
-          fb_speed_fix[0] = DY_PMW_OF_DX2FIX;
-          fb_speed_fix[1] = DY_PMW_OF_DY2FIX;
-        }
-        else
-        {
-          loc_ctrl_1.fb[X] = 0;
-          loc_ctrl_1.fb[Y] = 0;
-
-          fb_speed_fix[0] = 0;
-          fb_speed_fix[1] = 0;
-        }
+		loc_ctrl_1.fb[X] = DY_PMW_OF_DX2;
+		loc_ctrl_1.fb[Y] = DY_PMW_OF_DY2;
+		fb_speed_fix[0] = DY_PMW_OF_DX2FIX;
+		fb_speed_fix[1] = DY_PMW_OF_DY2FIX;
 
 		for(u8 i =0;i<2;i++)
 		{
@@ -89,8 +75,6 @@ void Loc_1level_Ctrl(u16 dT_ms,s16 *CH_N)
 
 			loc_ctrl_1.out[i] = loc_val_1[i].out + loc_val_1_fix[i].out;
 		}
-
-
 	}
 	else
 	{

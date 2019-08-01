@@ -121,9 +121,9 @@ void DY_DT_Data_Exchange(void)
 		DY_DT_Send_User(5, att_2l_ct.exp_rol * 100, att_2l_ct.fb_rol * 100);
 		DY_DT_Send_User(6, att_2l_ct.exp_pit * 100, att_2l_ct.fb_pit * 100);
 		DY_DT_Send_User(7, att_2l_ct.exp_yaw * 100, att_2l_ct.fb_yaw * 100);
-		DY_DT_Send_User(8, loc_ctrl_1.exp[X] * 10, loc_ctrl_1.fb[X] * 10);
-		DY_DT_Send_User(9, loc_ctrl_1.exp[Y] * 10, loc_ctrl_1.fb[Y] * 10);
-		DY_DT_Send_User(10, loc_ctrl_1.exp[Z] * 10, loc_ctrl_1.fb[Z] * 10);
+		DY_DT_Send_User(8, loc_ctrl_1.exp[X] * 100, loc_ctrl_1.fb[X] * 100);
+		DY_DT_Send_User(9, loc_ctrl_1.exp[Y] * 100, loc_ctrl_1.fb[Y] * 100);
+		DY_DT_Send_User(10, loc_ctrl_1.exp[Z] * 100, loc_ctrl_1.fb[Z] * 100);
 	}
 	else if(f.send_senser)
 	{

@@ -269,7 +269,6 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 		landing_cnt = 0;
 		flag.taking_off = 0;
 		flying_cnt = 0;
-		flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
 	}
 }
 
