@@ -18,6 +18,6 @@ void Alt_1level_PID_Init(void);
 void Alt_2level_Ctrl(float dT_s);
 void Alt_2level_PID_Init(void);
 
-void Auto_Take_Off_Land_Task(void);
+void Auto_Take_Off_Land_Task(u8 dT_ms);
 
 #endif

@@ -69,8 +69,8 @@ void land_discriminat(s16 dT_ms)
 {
 	if (flag.auto_take_off_land == AUTO_LAND)
 	{
-		/*自动模式，激光高度低于低于140mm阈值即可锁定*/
-		if (tof_height_mm > 0 && tof_height_mm < 140)
+		/*自动模式，激光高度低于低于140mm或者融合高度低于6cm阈值即可锁定*/
+		if ((tof_height_mm > 0 && tof_height_mm < 140) || (wcz_hei_fus.out < 8))
 		{
 			if (autolanding_cnt < 200)
 			{
@@ -83,6 +83,7 @@ void land_discriminat(s16 dT_ms)
 				DY_Debug_Mode = 0;
 				DY_Debug_Height_Mode = 0;
 				DY_Debug_Yaw_Mode = 0;
+				DY_DT_SendString("Auto Landed!", sizeof("Auto Landed!"));
 			}
 		}
 		else
@@ -118,6 +119,7 @@ void land_discriminat(s16 dT_ms)
 				else
 				{
 					flag.fly_ready = 0;
+					DY_DT_SendString("Manual Landed!", sizeof("Manual Landed!"));
 				}
 			}
 			else
@@ -225,12 +227,13 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 	{
 		if (flag.flying)
 		{
-			flag.auto_take_off_land = AUTO_LAND;
+			// flag.auto_take_off_land = AUTO_LAND;
 		}
 		else
 		{
-			flag.fly_ready = 0;
+			// flag.fly_ready = 0;
 		}
+		DY_DT_SendString("TOF Locking!", sizeof("TOF Locking!"));
 	}
 
 	/*倾斜过大上锁*/
@@ -345,7 +348,7 @@ void Swtich_State_Task(u8 dT_ms)
 
 	if(sens_hd_check.tof_ok)        //TOF模块
 	{
-		if(tof_height_mm<1900)
+		if(tof_height_mm<1600)
 		{
 			if(switchs.tof_on == 0)
 			{
@@ -404,15 +407,15 @@ void Flight_Mode_Set(u8 dT_ms)
 					DY_Debug_Mode = 1;
 					DY_Debug_Yaw_Mode = 1;
 					one_key_take_off();
+					DY_DT_SendString("Auto Taking off", sizeof("Auto Taking off"));
 				}
 			}
 			else									//起飞状态
 			{
 				if (DY_OpenMV_Flag == 0)			//OpenMv初始化前执行定高
 				{
-					if (ref_tof_height >= 70 || wcz_hei_fus.out >= 70)
+					if (flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
 					{
-						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 						DY_Task_ExeTime += dT_ms;
 					}
 					else
@@ -429,8 +432,8 @@ void Flight_Mode_Set(u8 dT_ms)
 					}
 					if(DY_Task_ExeTime >= 1000)		//满足定高一秒
 					{
-						flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 						DY_OpenMV_Flag = 1;
+						DY_DT_SendString("OpenMv Init", sizeof("OpenMv Init"));
 					}
 				}
 				else
@@ -451,6 +454,7 @@ void Flight_Mode_Set(u8 dT_ms)
 				DY_Debug_Yaw_Mode = 0;
 				DY_Task_ExeTime = 0;
 				DY_OpenMV_Flag = 0;
+				flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
 			}
 	}
 	else												//强制锁定

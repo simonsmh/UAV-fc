@@ -11,12 +11,12 @@
 
 #include "DY_FlightCtrl.h"
 
-static s16 auto_taking_off_speed;
+static s16 auto_taking_off_speed = 0, auto_take_off_height = 70;
 
 /***************高度控制变量初始化***************/
 s16 dy_height = 0;
 
-void Auto_Take_Off_Land_Task()
+void Auto_Take_Off_Land_Task(u8 dT_ms)
 {
 	if (flag.auto_take_off_land == AUTO_TAKE_OFF_NULL)
 	{
@@ -24,22 +24,24 @@ void Auto_Take_Off_Land_Task()
 	}
 	else if (flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
-		auto_taking_off_speed = 40;
+		auto_taking_off_speed = 2 * (auto_take_off_height - wcz_hei_fus.out);
+		auto_taking_off_speed = LIMIT(auto_taking_off_speed, 0, 80);
+		if (auto_take_off_height - wcz_hei_fus.out < 5) //如果cnt>2500或者是期望高度和实际高度误差在允许范围内
+		{
+			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
+		}
 	}
-	else if (flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
+	else if(flag.auto_take_off_land == AUTO_TAKE_OFF_FINISH)
 	{
-		if (auto_taking_off_speed > 0)
-		{
-			auto_taking_off_speed -= 1;
-		}
-		else
-		{
-			auto_taking_off_speed = 0;
-		}
+		auto_taking_off_speed = 0;
 	}
 	else if (flag.auto_take_off_land == AUTO_LAND)
 	{
-		auto_taking_off_speed = -35 - fs.speed_set_h[Z];
+		auto_taking_off_speed = -40 - fs.speed_set_h[Z];
+		if (auto_taking_off_speed > -40)
+		{
+			auto_taking_off_speed = -40;
+		}
 	}
 }
 
@@ -60,7 +62,7 @@ void Alt_2level_PID_Init()
 
 void Alt_2level_Ctrl(float dT_s)
 {
-	Auto_Take_Off_Land_Task();
+	Auto_Take_Off_Land_Task(1000*dT_s);
 
 /***************OpenMv控制***************/
 	if(DY_Debug_Height_Mode == 1)
@@ -79,7 +81,7 @@ void Alt_2level_Ctrl(float dT_s)
 	}
 	else
 	{
-		if(ABS(loc_ctrl_1.exp[Z] - loc_ctrl_1.fb[Z])<20)
+		if(ABS(loc_ctrl_1.exp[Z] - loc_ctrl_1.fb[Z])<30)
 		{
 			flag.ct_alt_hold = 1;
 		}
