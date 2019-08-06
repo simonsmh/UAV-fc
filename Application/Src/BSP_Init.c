@@ -38,13 +38,13 @@ u8 All_Init()
 
     Flash_Init();             		    //板载FLASH芯片(W25Q32)初始化，SPI1通信10MHz
 
-    Uart3_Init(500000);                //数传模块
-    Delay_ms(10);
-    MAP_UARTCharPut(UART3_BASE, 0x00); //UART3中断发送数据初始化（无效数据）
+    // Uart3_Init(500000);                //闲置
+    // Delay_ms(10);
+    // MAP_UARTCharPut(UART3_BASE, 0x00); //UART3中断发送数据初始化（无效数据）
     Uart4_Init(115200);                //OpenMv
     Delay_ms(10);
     MAP_UARTCharPut(UART4_BASE, 0x00); //UART4中断发送数据初始化（无效数据）
-    Uart5_Init(500000);                //闲置
+    Uart5_Init(500000);                //数传模块
     Delay_ms(10);
     MAP_UARTCharPut(UART5_BASE, 0x00); //UART5中断发送数据初始化（无效数据）
 

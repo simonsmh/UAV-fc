@@ -13,23 +13,14 @@
 
 motionBurst_t motionBurst;
 
-//光流电源控制
-void OpticalFlowPowerControl(bool state)
-{
-	if(state == true)
-		GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_7, GPIO_PIN_7);
-	else
-		GPIOPinWrite(GPIO_PORTC_BASE, GPIO_PIN_7, 0);
-}
-
 static void RegisterWrite(uint8_t reg, uint8_t value)
 {
 	// 最高位为1 写寄存器
 	reg |= 0x80u;
-	
+
 	NCS_PIN_L;
     MAP_SysCtlDelay(2000);   //50us
-	
+
 	Drv_SPI_RW(reg);
 	MAP_SysCtlDelay(2000);   //50us
 	Drv_SPI_RW(value);
@@ -45,15 +36,15 @@ static uint8_t RegisterRead(uint8_t reg)
 
 	// 最高位为0 读寄存器
 	reg &= ~0x80u;
-	
+
 	NCS_PIN_L;
 	MAP_SysCtlDelay(2000);      //50us
-	
+
 	Drv_SPI_RW(reg);
 	MAP_SysCtlDelay(20000);     //500us
 	data = Drv_SPI_RW(0x00);
 	MAP_SysCtlDelay(2000);      //50us
-	
+
 	NCS_PIN_H;
 	MAP_SysCtlDelay(8000);      //200us
 
@@ -61,25 +52,25 @@ static uint8_t RegisterRead(uint8_t reg)
 }
 
 static void RegisterRead_nByte(uint8_t *pData, uint8_t reg, uint16_t Size)
-{	
+{
 	NCS_PIN_L;
 	MAP_SysCtlDelay(2000);              //50us
-	
+
 	Drv_SPI_RW(reg);
 	MAP_SysCtlDelay(2000);              //50us
-	
+
 	for(uint16_t i=0; i<Size; i++)
     {
         pData[i] = Drv_SPI_RW(0x00);
 		MAP_SysCtlDelay(2000);          //50us
     }
-	
+
 	NCS_PIN_H;
 	MAP_SysCtlDelay(8000);              //200us
 }
 
 static void InitRegisters(void)
-{	
+{
 	RegisterWrite(0x7F, 0x00);
 	RegisterWrite(0x61, 0xAD);
 	RegisterWrite(0x7F, 0x03);
@@ -176,43 +167,36 @@ static void ResetOpticalFlowData(void)
 /*初始化光流模块*/
 u8 OpticalFlow_Init(void)
 {
-    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
-    while(!(MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC)))
-    {
-    }
-    GPIOPinTypeGPIOOutput(GPIO_PORTC_BASE, GPIO_PIN_7);
-    
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOQ);
     while(!(MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOQ)))
     {
     }
     GPIOPinTypeGPIOOutput(GPIO_PORTQ_BASE, GPIO_PIN_1);
-	
+
     ResetOpticalFlowData();
-	
-   //  OpticalFlowPowerControl(true);	/*打开电源*/
+
     MAP_SysCtlDelay(2000000);   //50ms
-	
+
 	NCS_PIN_H
 	Drv_SPI_Init();
 	MAP_SysCtlDelay(1600000);   //40ms
-	
+
 	uint8_t chipId = RegisterRead(0x00);
 	uint8_t invChipId = RegisterRead(0x5f);
-    
+
     if(chipId != 0x49)
       return 0;
-    
+
 //    printf("chipId:%d\r\n",chipId);
 //    printf("invChipId:%d\r\n",invChipId);
-	
+
 //	UARTprintf("chipId:0x%x\r\n",chipId);
 //	UARTprintf("invChipId:0x%x\r\n",invChipId);
 
 	// 上电复位
 	RegisterWrite(0x3a, 0x5a);
 	MAP_SysCtlDelay(200000);   //5ms
-	
+
 	InitRegisters();
 	MAP_SysCtlDelay(200000);   //5ms
     return 1;
@@ -228,7 +212,7 @@ void PMW3901_Read(void)
 void PMW3901_Data_Prepare(void)
 {
     PMW3901_Read();
-    
+
 	motionBurst.shutter = ((((uint16_t)OpticalFlow_RawData[10]) << 8) | OpticalFlow_RawData[11]);
 	motionBurst.minRawData = OpticalFlow_RawData[9];
 	motionBurst.maxRawData = OpticalFlow_RawData[8];
@@ -243,34 +227,34 @@ void PMW3901_Data_Prepare(void)
 void OpticalFlow_DataFusion_Task(void)
 {
     PMW3901_Data_Prepare();
-  
+
     /*连续2帧之间的像素变化，根据实际安装方向调整 (pitch:x)  (roll:y)*/
     int16_t pixelDx = motionBurst.deltaY;
     int16_t pixelDy = motionBurst.deltaX;
-    
+
     pmw_pixel_flow.SumX += pixelDx;
     pmw_pixel_flow.SumY += pixelDy;
     pmw_pixel_flow.LpfX += (pmw_pixel_flow.SumX - pmw_pixel_flow.LpfX)*lpfValue;
     pmw_pixel_flow.LpfY += (pmw_pixel_flow.SumY - pmw_pixel_flow.LpfY)*lpfValue;
-    
+
     float pmw_tempCoefficient = PMW_RESOLUTION * tof_height_mm * 0.001f;        //tof_height_mm
     float pmw_tanRoll = tanf(imu_data.rol * DEG_TO_RAD);
 	float pmw_tanPitch = tanf(imu_data.pit * DEG_TO_RAD);
-    
+
     pmw_pixel_flow.CompX += (555.f * pmw_tanPitch - pmw_pixel_flow.CompX)*lpfValue;     /*倾角补偿*/
-    pmw_pixel_flow.CompY += (605.f * pmw_tanRoll - pmw_pixel_flow.CompY)*lpfValue;
+    pmw_pixel_flow.CompY += (555.f * pmw_tanRoll - pmw_pixel_flow.CompY)*lpfValue;
     pmw_pixel_flow.DataOutX = (pmw_pixel_flow.LpfX - pmw_pixel_flow.CompX);	            /*实际输出像素*/
 	pmw_pixel_flow.DataOutY = (pmw_pixel_flow.LpfY - pmw_pixel_flow.CompY);
-    
+
     pmw_pixel_flow.DataDx = pmw_tempCoefficient * (pmw_pixel_flow.DataOutX - pmw_lastOutX);	/*2帧之间位移变化量，单位 cm*/
-	pmw_pixel_flow.DataDy = pmw_tempCoefficient * (pmw_pixel_flow.DataOutY - pmw_lastOutY);	
+	pmw_pixel_flow.DataDy = pmw_tempCoefficient * (pmw_pixel_flow.DataOutY - pmw_lastOutY);
 	pmw_lastOutX = pmw_pixel_flow.DataOutX;	        /*上一次实际输出像素*/
 	pmw_lastOutY = pmw_pixel_flow.DataOutY;
 	pmw_pixel_flow.Vx = 100.f * (pmw_pixel_flow.DataDx);	/*速度 cm/s*/
 	pmw_pixel_flow.Vy = 100.f * (pmw_pixel_flow.DataDy);
     pmw_pixel_flow.VxFix += (pmw_pixel_flow.Vx - pmw_pixel_flow.VxFix) * 0.08f;	/*速度LPF*/
 	pmw_pixel_flow.VyFix += (pmw_pixel_flow.Vy - pmw_pixel_flow.VyFix) * 0.08f;	/*速度LPF*/
-    
+
     DY_PMW_OF_DX2 = (int16_t)pmw_pixel_flow.Vx;
     DY_PMW_OF_DY2 = (int16_t)pmw_pixel_flow.Vy;
     DY_PMW_OF_DX2FIX = (int16_t)pmw_pixel_flow.VxFix;

@@ -43,13 +43,13 @@ PA6——UART2_RX----IAP升级
 PA7——UART2_TX
 
 PJ0——UART3_RX----损坏
-PJ1——UART3_TX----数传TX
+PJ1——UART3_TX
 
 PK0——UART4_RX----OpenMV
 PK1——UART4_TX
 
-PC6——UART5_RX----数传RX
-PC7——UART5_TX----损坏
+PC6——UART5_RX----数传
+PC7——UART5_TX
 
 /**********ATK-PMW3901光流模块**********/
 PQ0----SCLK----SPI3的时钟
