@@ -11,7 +11,7 @@
 
 #include "DY_FlightCtrl.h"
 
-static s16 auto_taking_off_speed = 0, auto_take_off_height = 70;
+static s16 auto_taking_off_speed = 0;
 
 /***************高度控制变量初始化***************/
 s16 dy_height = 0;
@@ -24,9 +24,9 @@ void Auto_Take_Off_Land_Task(u8 dT_ms)
 	}
 	else if (flag.auto_take_off_land == AUTO_TAKE_OFF)
 	{
-		auto_taking_off_speed = 2 * (auto_take_off_height - wcz_hei_fus.out);
+		auto_taking_off_speed = 2 * (DY_Parame.set.auto_take_off_height - wcz_hei_fus.out);
 		auto_taking_off_speed = LIMIT(auto_taking_off_speed, 0, 80);
-		if (auto_take_off_height - wcz_hei_fus.out < 5) //如果cnt>2500或者是期望高度和实际高度误差在允许范围内
+		if (DY_Parame.set.auto_take_off_height - wcz_hei_fus.out < 5) //如果期望高度和实际高度误差在允许范围内
 		{
 			flag.auto_take_off_land = AUTO_TAKE_OFF_FINISH;
 		}

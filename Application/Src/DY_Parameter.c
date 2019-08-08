@@ -90,11 +90,11 @@ void Parame_Reset(void)
 {
 	//参数初始化
 	DY_Parame.set.pwmInMode = PWM;
-	DY_Parame.set.warn_power_voltage = 3.7f *3;		        //警告电压	11.1V
+	DY_Parame.set.warn_power_voltage = 3.7f *3;				//警告电压	11.1V
 	DY_Parame.set.return_home_power_voltage = 3.55f *3;		//返航电压	10.65V
-	DY_Parame.set.lowest_power_voltage = 3.5f *3;		    //最低电压	10.5V
+	DY_Parame.set.lowest_power_voltage = 3.5f *3;			//最低电压	10.5V
 
-	DY_Parame.set.auto_take_off_height = 0;//自动起飞高度 0cm
+	DY_Parame.set.auto_take_off_height = 100;				//自动起飞高度 100cm
 
 	for(u8 i = 0;i<3;i++)
 	{
