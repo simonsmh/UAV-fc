@@ -379,15 +379,14 @@ u8 DY_OpenMV_Flag = 0;
 void Flight_Mode_Set(u8 dT_ms)
 {
 	LED_Switch();
-	flag.flight_mode = LOC_HOLD;					//定高悬停
 
 	if(CH_N[AUX1]<-200)
 	{
-		MAP_UARTCharPut(UART4_BASE, 'H');			//OpenMv开始工作
+		flag.flight_mode = ATT_STAB;
 	}
 	else if(CH_N[AUX1]<200)
 	{
-
+		flag.flight_mode = LOC_HOLD;
 	}
 	else
 	{
@@ -403,8 +402,8 @@ void Flight_Mode_Set(u8 dT_ms)
 				if (DY_Debug_Height_Mode == 0)		//仅调用一次
 				{
 					flag.auto_take_off_land = AUTO_TAKE_OFF_NULL;
-					DY_Debug_Height_Mode = 1;
 					DY_Debug_Mode = 1;
+					DY_Debug_Height_Mode = 1;
 					DY_Debug_Yaw_Mode = 1;
 					one_key_take_off();
 					DY_DT_SendString("Auto Taking off", sizeof("Auto Taking off"));

@@ -241,8 +241,8 @@ void OpticalFlow_DataFusion_Task(void)
     float pmw_tanRoll = tanf(imu_data.rol * DEG_TO_RAD);
 	float pmw_tanPitch = tanf(imu_data.pit * DEG_TO_RAD);
 
-    pmw_pixel_flow.CompX += (555.f * pmw_tanPitch - pmw_pixel_flow.CompX)*lpfValue;     /*Çã½Ç²¹³¥*/
-    pmw_pixel_flow.CompY += (555.f * pmw_tanRoll - pmw_pixel_flow.CompY)*lpfValue;
+    pmw_pixel_flow.CompX += (605.f * pmw_tanPitch - pmw_pixel_flow.CompX)*lpfValue;     /*Çã½Ç²¹³¥*/
+    pmw_pixel_flow.CompY += (605.f * pmw_tanRoll - pmw_pixel_flow.CompY)*lpfValue;
     pmw_pixel_flow.DataOutX = (pmw_pixel_flow.LpfX - pmw_pixel_flow.CompX);	            /*Êµ¼ÊÊä³öÏñËØ*/
 	pmw_pixel_flow.DataOutY = (pmw_pixel_flow.LpfY - pmw_pixel_flow.CompY);
 
