@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：ICM20602驱动
-**********************************************************************************/
+
 #include "Drv_icm20602.h"
 #include "DY_Filter.h"
 #include "DY_Math.h"
@@ -15,9 +11,9 @@ void Drv_Icm20602CSPin_Init(void)
     while(!(MAP_SysCtlPeripheralReady(ICM20602_CS_SYSCTL)))
     {
     }
-    
+
     GPIOPinTypeGPIOOutput(ICM20602_CS_GPIO, ICM20602_CS_PIN);
-    
+
     GPIOPinWrite(ICM20602_CS_GPIO, ICM20602_CS_PIN, ICM20602_CS_PIN);
 }
 
@@ -45,7 +41,7 @@ static u8 icm20602_writebyte(u8 reg, u8 data)
     status = Drv_SPI2_RW(reg);
     Drv_SPI2_RW(data);
     icm20602_enable(0);
-    
+
     return status;
 }
 
@@ -55,7 +51,7 @@ reg	   寄存器地址
 bitNum  要修改目标字节的bitNum位
 data  为0 时，目标位将被清0 否则将被置位
 *******************************************************************************/
-static void icm20602_writeBit(u8 reg, u8 bitNum, u8 data) 
+static void icm20602_writeBit(u8 reg, u8 bitNum, u8 data)
 {
     u8 b;
     icm20602_readbuf(reg, 1, &b);
@@ -76,8 +72,8 @@ u8 Drv_Icm20602Reg_Init(void)
     MAP_SysCtlDelay(400000);
 
     icm20602_readbuf(MPUREG_WHOAMI, 1, &tmp);
-    
-    if(tmp != MPU_WHOAMI_20602) 
+
+    if(tmp != MPU_WHOAMI_20602)
     return 0;
 
     /*复位reg*/
@@ -222,7 +218,7 @@ void MPU6050_Data_Offset()
 		if(off_cnt>=10)
 		{
 			off_cnt=0;
-            
+
 			if(sensor.gyr_CALIBRATE)
 			{
 				LED_state = 2;
@@ -283,7 +279,7 @@ void MPU6050_Data_Offset()
 }
 
 s16 roll_gz_comp;
-float wh_matrix[VEC_XYZ][VEC_XYZ] = 
+float wh_matrix[VEC_XYZ][VEC_XYZ] =
 {
 	{1,0,0},
 	{0,1,0},
@@ -303,10 +299,10 @@ static float gyr_f1[VEC_XYZ],acc_f1[VEC_XYZ];
 void Sensor_Data_Prepare(u8 dT_ms)
 {
   	float hz = 0 ;
-    
-	if(dT_ms != 0) 
+
+	if(dT_ms != 0)
       hz = 1000/dT_ms;
-    
+
 	u8 i = 0;
 
 	/*静止检测*/
@@ -373,7 +369,7 @@ void Sensor_Data_Prepare(u8 dT_ms)
 		center_pos.gyro_rad[i] =  gyr_f1[X + i] *RANGE_PN2000_TO_RAD;//0.001065f;
 		center_pos.gyro_rad_acc[i] = hz *(center_pos.gyro_rad[i] - center_pos.gyro_rad_old[i]);
 	}
-    
+
     center_pos.linear_acc[X] = +center_pos.gyro_rad_acc[Z] *center_pos.center_pos_cm[Y] - center_pos.gyro_rad_acc[Y] *center_pos.center_pos_cm[Z];
 	center_pos.linear_acc[Y] = -center_pos.gyro_rad_acc[Z] *center_pos.center_pos_cm[X] + center_pos.gyro_rad_acc[X] *center_pos.center_pos_cm[Z];
 	center_pos.linear_acc[Z] = +center_pos.gyro_rad_acc[Y] *center_pos.center_pos_cm[X] - center_pos.gyro_rad_acc[X] *center_pos.center_pos_cm[Y];
@@ -400,5 +396,3 @@ void Sensor_Data_Prepare(u8 dT_ms)
         sensor.Acc_cmss[i] = (sensor.Acc[i] *RANGE_PN8G_TO_CMSS);
     }
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

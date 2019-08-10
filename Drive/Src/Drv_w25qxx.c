@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：板载FLASH存储芯片驱动
-**********************************************************************************/
+
 #include "stdio.h"
 #include "Drv_w25qxx.h"
 
@@ -73,27 +69,27 @@ static uint8_t Flash_SendByte ( uint8_t byte )
 
     /* Send the data from the SSI-1 Master */
     MAP_SSIDataPut(SSI1_BASE, byte);
-     
+
     /* Wait for the data to be transmitted out of the SSI0 by checking on
      * the busy status from the SSI controller*/
     while(MAP_SSIBusy(SSI1_BASE));
-    
+
     MAP_SSIDataGet(SSI1_BASE, &getData);
-    
+
     return getData;
 }
 
 void Flash_Init ( void )
 {
     jedec_id_t flash_id;
-    
+
     MAP_SysCtlPeripheralDisable(SYSCTL_PERIPH_SSI1);
     MAP_SysCtlPeripheralReset(SYSCTL_PERIPH_SSI1);
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
     while(!(MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_SSI1)))
     {
     }
-    
+
     MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     while(!(MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB)))
     {
@@ -102,16 +98,16 @@ void Flash_Init ( void )
     while(!(MAP_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOE)))
     {
     }
-    
+
     MAP_GPIOPinConfigure(GPIO_PB5_SSI1CLK);
     MAP_GPIOPinConfigure(GPIO_PE4_SSI1XDAT0);
     MAP_GPIOPinConfigure(GPIO_PE5_SSI1XDAT1);
-    
+
     MAP_GPIOPinTypeSSI(GPIO_PORTB_BASE, GPIO_PIN_5);
     MAP_GPIOPinTypeSSI(GPIO_PORTE_BASE, GPIO_PIN_4 | GPIO_PIN_5);
 
     GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_4);
-    
+
       //Polarity Phase       Mode
       //  0       0   SSI_FRF_MOTO_MODE_0
       //  0       1   SSI_FRF_MOTO_MODE_1
@@ -119,19 +115,19 @@ void Flash_Init ( void )
       //  1       1   SSI_FRF_MOTO_MODE_3
     MAP_SSIConfigSetExpClk(SSI1_BASE, g_ui32SysClock, SSI_FRF_MOTO_MODE_0,
                            SSI_MODE_MASTER, (g_ui32SysClock/12), 8);
-    
+
     MAP_SSIEnable(SSI1_BASE);
-    
+
     W25QXX_CS_HIGH();
     /* Select the FLASH: Chip Select low */
     W25QXX_CS_LOW();
     /* Send "0xff " instruction */
     Flash_SendByte ( DUMMY_BYTE );
-    
+
     W25QXX_CS_HIGH();
     /* read flash id */
     Flash_ReadID ( &flash_id );
-    
+
     if ( flash_id.Manufacturer == JEDEC_MANUFACTURER_WINBOND )
     {
         w25qxx_debug ( "W25Q128 ID = 0x%02X\r\n", flash_id.Manufacturer );
@@ -369,5 +365,3 @@ flash_info_t *Flash_GetInfo ( void )
 {
     return &flash_info;
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

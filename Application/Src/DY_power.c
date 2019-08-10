@@ -30,7 +30,6 @@ void Power_UpdateTask(u8 dT_ms)
 	{
 		cut_off_freq = 0.05f;
 	}
-	/***********************************************/
 
 	LPF_1_(cut_off_freq,dT_ms*1e-3f,voltage_s16,voltage_f);
 

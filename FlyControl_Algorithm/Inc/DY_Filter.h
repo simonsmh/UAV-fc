@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：滤波函数
-**********************************************************************************/
+
 #ifndef _DY_FILTER_H_
 #define _DY_FILTER_H_
 
@@ -26,12 +22,12 @@ typedef struct
 {
 	float in_est;    //Estimator
 	float in_obs;    //Observation
-	
+
 	float fix_ki;
 	float ei_limit;     //
 
 
-/////	
+/////
 	float e;
 	float ei;
 
@@ -42,11 +38,11 @@ typedef struct
 {
 	float in_est_d;   //Estimator
 	float in_obs;    //Observation
-	
+
 	float fix_kp;
 	float e_limit;
 
-/////	
+/////
 	float e;
 
 	float out;
@@ -86,7 +82,7 @@ typedef struct
 	u8 cnt;
 
 	s32 lst_pow_sum;
-	
+
 	s32 now_out;
 	s32 lst_out;
 	s32 now_velocity_xdt;
@@ -94,7 +90,7 @@ typedef struct
 
  typedef struct Filter
 {
-	float           _cutoff_freq; 
+	float           _cutoff_freq;
 	float           _a1;
 	float           _a2;
 	float           _b0;
@@ -119,7 +115,7 @@ float low_pass2_filter(float sample,filter_s* imu_filter);
 
 
 void steepest_descend(s32 arr[],u8 len,_steepest_st *steepest,u8 step_num,s32 in);
-	
+
 void filter_1(float ,float ,float ,float ,_filter_1_st *);
 
 void jyoun_limit_deadzone_filter(float T,float hz1,float hz2,_jldf_t *data,float in);//白噪声滤波
@@ -138,15 +134,15 @@ void step_filter(float step,float in,float *out);
 void fir_arrange_filter(float *arr,u16 len,u8 *fil_cnt,float in,float *arr_out);  //len<=255 len >= 3
 
 #define LPF_1_(hz,t,in,out) ((out) += ( 1 / ( 1 + 1 / ( (hz) *6.28f *(t) ) ) ) *( (in) - (out) ))		//0.018*(in - out)
-#define S_LPF_1(a,in,out) ((out) += (a) *( (in) - (out) ))	//a == 1 / ( 1 + 1 / ( (hz) *6.28f *(t) ) ) 
-										
+#define S_LPF_1(a,in,out) ((out) += (a) *( (in) - (out) ))	//a == 1 / ( 1 + 1 / ( (hz) *6.28f *(t) ) )
+
 //void LPF_1(float hz,//截止频率
 //					float time,//周期
 //					float in,//输入
 //					float *out//输出
 //					);
 
-					
+
 void LPF_1_db(float hz,float time,double in,double *out); //低通滤波，2hz代表0.5秒上升至目标值0.7倍，大约1秒上升到90%
 
 void LPF_I(float raw_a,float raw_b,float time,float in,float *out,float *intera);
@@ -158,7 +154,7 @@ float my_deadzone_3(float T,float hz,float x,float ,float zoom,float range_x,flo
 					x
 					|
 			y---z
-			
+
 对应世界坐标中，x为地磁方向，z为重力方向。
 
 ======================================*/
@@ -166,4 +162,3 @@ void vec_3dh_transition(float ref[VEC_XYZ], float in[VEC_XYZ], float out[VEC_XYZ
 void vec_3dh_transition_matrix(float ref[VEC_XYZ],float wh_matrix[VEC_XYZ][VEC_XYZ]);
 
 #endif
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

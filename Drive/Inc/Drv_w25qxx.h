@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：板载FLASH存储芯片驱动
-**********************************************************************************/
 #ifndef _DRIVER_AT45DB_H_
 #define _DRIVER_AT45DB_H_
 
@@ -27,5 +22,3 @@ void Flash_SectorsWrite(uint32_t address,uint8_t *buffer,uint16_t count);
 flash_info_t *Flash_GetInfo(void);
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

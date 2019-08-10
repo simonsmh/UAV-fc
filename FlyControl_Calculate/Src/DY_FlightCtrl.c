@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：飞行控制
-**********************************************************************************/
+
 #include "DY_FlightCtrl.h"
 #include "DY_Imu.h"
 #include "Drv_icm20602.h"
@@ -137,7 +133,6 @@ void land_discriminat(s16 dT_ms)
 /*飞行状态任务*/
 /***************PIT、ROL控制变量初始化+OpenMv***************/
 s16 dy_pit = 0,dy_rol = 0;
-/***********************************************************/
 void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 {
 	s16 thr_deadzone;
@@ -217,7 +212,6 @@ void Flight_State_Task(u8 dT_ms,s16 *CH_N)
 		fs.speed_set_h[X] = fs.speed_set_h_cms[X];
 		fs.speed_set_h[Y] = fs.speed_set_h_cms[Y];
 	}
-/******************************************************/
 
 	/*调用检测着陆的函数*/
 	land_discriminat(dT_ms);
@@ -419,14 +413,6 @@ void Flight_Mode_Set(u8 dT_ms)
 					}
 					else
 					{
-						if (switchs.tof_on)			//防止高度不符,激光工作时继续起飞
-						{
-							flag.auto_take_off_land = AUTO_TAKE_OFF;
-						}
-						else						//激光出错,立即降落!
-						{
-							flag.auto_take_off_land = AUTO_LAND;
-						}
 						DY_Task_ExeTime = 0;
 					}
 					if(DY_Task_ExeTime >= 1000)		//满足定高一秒
@@ -470,5 +456,3 @@ void Flight_Mode_Set(u8 dT_ms)
 
 
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

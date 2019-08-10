@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
-  * 作者   ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：参数配置等
-**********************************************************************************/
 #include "include.h"
 #include "Drv_w25qxx.h"
 #include "DY_FlightCtrl.h"
@@ -174,5 +169,3 @@ void DY_Parame_Write_task(u16 dT_ms)
 		para_sta.save_trig = 0;
 	}
 }
-
-/******************* (C) COPYRIGHT 2018 DY TECH *****END OF FILE************/

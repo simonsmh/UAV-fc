@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DeYan Electronic Technology ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：系统初始化
-******************************************************************************************************/
 #include "include.h"
 #include "Drv_pwm_out.h"
 #include "Drv_led.h"
@@ -92,5 +87,3 @@ u8 All_Init()
 
 	return (1);
 }
-
-/******************* (C) COPYRIGHT 2018 DeYan Electronic Technology **********************************/

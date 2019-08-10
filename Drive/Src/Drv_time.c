@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：定时器驱动和滴答配置
-**********************************************************************************/
+
 #include "Drv_time.h"
 #include "include.h"
 #include "Drv_led.h"
@@ -10,7 +6,7 @@
 volatile uint32_t sysTickUptime = 0;
 
 void  SysTick_Configuration ( void )
-{  
+{
   MAP_SysTickPeriodSet(g_ui32SysClock/1000);    //时间基准：1ms
   MAP_SysTickIntEnable();
   MAP_SysTickEnable();
@@ -50,10 +46,8 @@ u32 SysTick_GetTick(void)
 }
 
 void SysTick_Handler(void)
-{  
+{
   sysTickUptime++;
   sys_time();
   LED_1ms_DRV();
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：数据传输
-**********************************************************************************/
 #ifndef _DATA_TRANSFER_H
 #define	_DATA_TRANSFER_H
 
@@ -125,4 +120,3 @@ void DY_DT_SendString(char *str, u8 len);
 
 #endif
 
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

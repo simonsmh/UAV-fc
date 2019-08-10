@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：数据传输
-**********************************************************************************/
 #include "DY_DT.h"
 #include "DY_RC.h"
 #include "Drv_usart.h"
@@ -874,5 +869,3 @@ void DY_DT_Send_User(u8 num, s16 data_1, s16 data_2)
 
 	DY_DT_Send_Data(data_to_send, _cnt);
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

@@ -69,7 +69,6 @@ void Alt_2level_Ctrl(float dT_s)
 	{
 		fs.speed_set_h[Z] = dy_height;
 	}
-/*****************************************************/
 
 	fs.alt_ctrl_speed_set = fs.speed_set_h[Z] + auto_taking_off_speed;
 

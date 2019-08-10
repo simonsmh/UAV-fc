@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：SPI驱动
-**********************************************************************************/
 #ifndef _DRV_SPI_H_
 #define _DRV_SPI_H_
 
@@ -18,5 +13,3 @@ void Drv_SPI2_Transmit(uint8_t *pData, uint16_t Size);
 void Drv_SPI2_Receive(uint8_t *pData, uint16_t Size);
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

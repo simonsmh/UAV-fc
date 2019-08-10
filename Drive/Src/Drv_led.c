@@ -1,8 +1,4 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：LED驱动
-**********************************************************************************/
+
 #include "Drv_led.h"
 #include "DY_Math.h"
 #include "Drv_time.h"
@@ -492,5 +488,3 @@ void LED_Task(u8 dT_ms) //10ms一次
 	}
 
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

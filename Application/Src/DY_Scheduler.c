@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DeYan Electronic Technology ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：任务调度
-******************************************************************************************************/
 #include "DY_Scheduler.h"
 #include "include.h"
 #include "DY_RC.h"
@@ -187,5 +182,3 @@ void Scheduler_Run(void)
 		}
 	}
 }
-
-/******************* (C) COPYRIGHT 2018 DeYan Electronic Technology **********************************/

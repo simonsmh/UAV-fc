@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：ICM20602驱动
-**********************************************************************************/
 #ifndef _DRV_ICM20602_H_
 #define _DRV_ICM20602_H_
 
@@ -338,19 +333,19 @@ typedef struct
   u8 surface_CALIBRATE;
 	float surface_vec[VEC_XYZ];
 	float surface_unitvec[VEC_XYZ];
-	
+
 }_sensor_rotate_st;
 extern _sensor_rotate_st sensor_rot ;
 
-typedef struct 
+typedef struct
 {
 	u8 acc_CALIBRATE;
 	u8 gyr_CALIBRATE;
 	u8 acc_z_auto_CALIBRATE;
-	
+
 	s16 Acc_Original[VEC_XYZ];
 	s16 Gyro_Original[VEC_XYZ];
-	
+
 	s16 Acc[VEC_XYZ];
 	s32 Acc_cmss[VEC_XYZ];
 	float Gyro[VEC_XYZ];
@@ -359,8 +354,8 @@ typedef struct
 
 	s16 Tempreature;
 	float Tempreature_C;
-	
-}_sensor_st;//__attribute__((packed)) 
+
+}_sensor_st;//__attribute__((packed))
 extern _sensor_st sensor;
 
 void Drv_Icm20602CSPin_Init(void);
@@ -370,5 +365,3 @@ void Sensor_Data_Prepare(u8 dT_ms);
 void Center_Pos_Set(void);
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

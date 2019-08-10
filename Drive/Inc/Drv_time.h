@@ -16,5 +16,3 @@ void sys_time(void);
 u32 SysTick_GetTick(void);
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

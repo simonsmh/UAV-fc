@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DeYan Electronic Technology ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：常用类型声明和宏定义
-******************************************************************************************************/
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
@@ -35,5 +30,3 @@ typedef volatile uint32_t   vu32;   /* 32 bits */
 typedef volatile uint64_t   vu64;   /* 64 bits */
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DeYan Electronic Technology **********************************/

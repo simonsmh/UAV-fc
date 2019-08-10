@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：SPL06气压计驱动
-**********************************************************************************/
 #include "Drv_spl06.h"
 #include "include.h"
 #include "Drv_spi.h"
@@ -14,7 +9,7 @@ void Drv_SPL06CSPin_Init ( void )
     {
     }
     GPIOPinTypeGPIOOutput(SPL06_CS_GPIO, SPL06_CS_PIN);
-    
+
     GPIOPinWrite(SPL06_CS_GPIO, SPL06_CS_PIN, SPL06_CS_PIN);
 }
 
@@ -475,5 +470,3 @@ float Drv_Spl0601_Read ( void )
 
     return alt_high;
 }
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

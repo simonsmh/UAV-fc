@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：飞控数据
-**********************************************************************************/
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef _DY_FCDATA_H_
 #define _DY_FCDATA_H_
@@ -176,7 +171,7 @@ typedef struct
       u8 baro_on;
       u8 gps_on;
 
-      u8 dy_opticalflow_on;     //徳研光流
+      u8 dy_opticalflow_on;
       u8 dy_pmw3901_on;
 
 }_switch_st;
@@ -193,7 +188,7 @@ typedef struct
       u8 tof_ok;
       u8 of_ok;
 
-      u8 dy_opticalflow_ok;     //徳研光流
+      u8 dy_opticalflow_ok;
       u8 dy_pmw3901_ok;
 
 } _sensor_hd_check_st; //Hardware
@@ -207,5 +202,3 @@ void data_save(void);
 void Para_Data_Init(void);
 
 #endif
-
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

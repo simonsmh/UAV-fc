@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：遥控器通道数据处理
-**********************************************************************************/
 #ifndef _RC_H_
 #define	_RC_H_
 
@@ -49,4 +44,3 @@ void signal_check_task(u8);
 void ch_watch_dog_feed(u8 ch_n);
 
 #endif
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/

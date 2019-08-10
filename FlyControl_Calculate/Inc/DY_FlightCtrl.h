@@ -1,8 +1,3 @@
-/******************** (C) COPYRIGHT 2018 DY EleTe ********************************
- * 作者    ：徳研电科
- * 官网    ：www.gototi.com
- * 描述    ：飞行控制
-**********************************************************************************/
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef _FLIGHT_CTRL_H_
 #define _FLIGHT_CTRL_H_
@@ -45,4 +40,3 @@ void Flight_Mode_Set(u8 dT_ms);
 void Swtich_State_Task(u8 dT_ms);
 
 #endif
-/******************* (C) COPYRIGHT 2018 DY EleTe *****END OF FILE************/
